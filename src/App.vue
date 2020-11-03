@@ -1,12 +1,119 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div id="components-layout-demo-basic">
+    <a-layout>
+      <a-layout-header>
+        <div id="nav">
+          <a-row type="flex" justify="center" align="middle">
+            <!--导航-->
+            <a-col :span="12">
+              <a-menu v-model:selectedKeys="current" mode="horizontal">
+                <a-menu-item key="zhifou">
+                  <router-link to="/">知否</router-link>
+                </a-menu-item>
+                <a-menu-item key="app1" >
+                  <router-link to="/question/123">问题的回答列表</router-link>
+                </a-menu-item>
+                <a-menu-item key="app2" >
+                  <router-link to="/question/waiting">请你回答</router-link>
+                </a-menu-item>
+                <a-menu-item key="app3" >
+                  <router-link to="/question/123/answer/456">看回答</router-link>
+                </a-menu-item>
+              </a-menu>
+            </a-col>
+            <!--查询-->
+            <a-col :span="8">
+              <a-input-search
+                v-model:value="value"
+                placeholder="如何学习Vue？"
+                @search="onSearch"
+                style="width: 200px"
+                size="large"
+              />
+            </a-col>
+            <!--提问-->
+            <a-col :span="2">
+              <a-button type="primary" size="large">提问</a-button>
+            </a-col>
+            <!--消息提醒-->
+            <a-col :span="1">
+              <a-popover placement="bottom"  trigger="click">
+                <template v-slot:content>
+                  <p>Content</p>
+                  <p>Content</p>
+                </template>
+                <template v-slot:title>
+                  <span>Title</span>
+                </template>
+                <a-badge :count="5" title="Custom hover text">
+                  <div class="icons-list"><BellOutlined />
+                    <a href="#" class="head-example" >
+                      <BellOutlined />
+                    </a>
+                  </div>
+                </a-badge>
+              </a-popover>
+            </a-col>
+          </a-row>
+        </div>
+      </a-layout-header>
+      <!--中间导航内容-->
+      <a-layout-content><router-view/></a-layout-content>
+      <a-layout-footer>自然框架，vue3，antdv </a-layout-footer>
+    </a-layout>
   </div>
-  <router-view/>
 </template>
 
+<script>
+import { BellOutlined } from '@ant-design/icons-vue'
+
+export default {
+  data () {
+    return {
+      current: ['mail']
+    }
+  },
+  components: {
+    BellOutlined
+  }
+}
+</script>
+
 <style lang="scss">
+#components-layout-demo-basic {
+  text-align: center;
+}
+#components-layout-demo-basic .ant-layout-header{
+  text-align: center;
+  background: rgb(244, 245, 235);
+  color: #fff;
+  margin-bottom: 2px;
+  padding: 5px;
+}
+#components-layout-demo-basic .ant-layout-footer {
+  background: #cae1f1;
+  color: rgb(39, 28, 28);
+}
+#components-layout-demo-basic .ant-layout-footer {
+  line-height: 1.5;
+}
+#components-layout-demo-basic .ant-layout-sider {
+  background: #ebeff1;
+  color: #fff;
+  line-height: 120px;
+}
+#components-layout-demo-basic .ant-layout-content {
+  background: rgb(250, 252, 231);
+  color: rgb(41, 24, 24);
+  min-height: 120px;
+  line-height: 120px;
+}
+#components-layout-demo-basic > .ant-layout {
+  margin-bottom: 48px;
+}
+#components-layout-demo-basic > .ant-layout:last-child {
+  margin: 0;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -16,8 +123,11 @@
 }
 
 #nav {
-  padding: 30px;
-
+  text-align: center;
+  width:900px;
+  border:1px solid #db820d;
+  margin:0px auto;
+  padding: 3px;
   a {
     font-weight: bold;
     color: #2c3e50;
@@ -26,5 +136,30 @@
       color: #42b983;
     }
   }
+}
+#components-popover-demo-placement .ant-btn {
+  width: 70px;
+  text-align: center;
+  padding: 0;
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+</style>
+<style scoped>
+#components-badge-demo-title .ant-badge:not(.ant-badge-status) {
+  margin-right: 20px;
+}
+.head-example {
+  width: 42px;
+  height: 42px;
+  border-radius: 4px;
+  background: #eee;
+  display: inline-block;
+}
+</style>
+<style scoped>
+.icons-list ::v-deep(.anticon) {
+  margin-right: 1px;
+  font-size: 24px;
 }
 </style>
