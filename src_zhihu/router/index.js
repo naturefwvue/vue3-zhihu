@@ -9,6 +9,18 @@ const routes = [
     component: Zhihu
   },
   {
+    path: '/follow',
+    name: 'follow',
+    // 问题列表
+    component: () => import(/* webpackChunkName: "question" */ '../views/zh-head-follow.vue')
+  },
+  {
+    path: '/hot',
+    name: 'hot',
+    // 问题列表
+    component: () => import(/* webpackChunkName: "question" */ '../views/zh-head-hot.vue')
+  },
+  {
     path: '/about',
     name: 'About',
     // route level code-splitting

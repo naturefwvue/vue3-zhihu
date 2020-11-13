@@ -17,7 +17,7 @@
 
 <script>
 import Navi from '@/components/web/navi.vue'
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
 
 export default {
   components: {
@@ -26,16 +26,16 @@ export default {
   setup (props) {
     // alert('首页setup')
 
-    const router = useRouter()
-    console.log('router')
-    console.log(router)
+    // const router = useRouter()
+    // console.log('router')
+    // console.log(router)
 
-    const routes = router.getRoutes()
-    console.log('routes')
-    console.log(routes)
-    const route = router.currentRoute.value
-    console.log('route')
-    console.log(route)
+    // const routes = router.getRoutes()
+    // console.log('routes')
+    // console.log(routes)
+    // const route = router.currentRoute.value
+    // console.log('route')
+    // console.log(route)
     /*
       fullPath: "/"
       hash: ""
@@ -46,7 +46,6 @@ export default {
       path: "/"
       query: {}
       redirectedFrom: undefined
-    */
 
     router.beforeEach((to, from, next) => {
       // ...
@@ -56,7 +55,7 @@ export default {
       console.log(from)
       next()
     })
-
+    */
     return {
 
     }
@@ -76,7 +75,7 @@ export default {
   line-height: 1.5;
 }
 #components-layout-demo-basic .ant-layout-sider {
-  background: #3ba0e9;
+  background: #dce7f0;
   color: #fff;
   text-align: center;
   line-height: 120px;
