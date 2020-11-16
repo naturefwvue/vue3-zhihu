@@ -12,7 +12,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 export default {
-  name: 'page404',
+  name: 'login',
   setup (props) {
     const val = ref('33')
     const router = useRouter()

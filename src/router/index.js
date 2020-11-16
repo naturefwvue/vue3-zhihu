@@ -1,36 +1,40 @@
 import { createRouter, createWebHistory } from 'vue-router'
 // import Home from '../views/Home.vue'
-import Zhihu from '../views/zhihu.vue'
+import index from '../views/zhihu.vue'
 
-// 传统网站方式
+// 基础路由
 const routes = [
   {
     path: '/',
     name: 'Home',
-    // 网站首页
-    component: Zhihu
+    meta: { title: '路由演示' },
+    component: index
   },
   {
     path: '/404',
     name: 'page404',
-    // 404
+    meta: { title: '找不到网页' },
     component: () => import('../views/404.vue')
   },
   {
     path: '/login',
     name: 'login',
-    // 登录
+    meta: { title: '用户登录' },
     component: () => import('../views/login.vue')
-  },
+  }]
+
+// 网站模块路由
+routes.push(
   {
     path: '/question',
     name: 'question',
-    // 问题列表
+    meta: { title: '问题列表' },
     component: () => import(/* webpackChunkName: "question" */ '../views/zh-Question-list.vue')
   },
   {
     path: '/question/list',
     name: 'questionWaiting',
+    meta: { title: '问题列表' },
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -41,6 +45,7 @@ const routes = [
         // UserProfile 会被渲染在 User 的 <router-view> 中
         path: '/question/list/:type',
         name: 'questionIdAnswerHot',
+        meta: { title: '{type}' },
         component: () => import('../views/zh-Question-list.vue')
       }
     ]
@@ -48,6 +53,7 @@ const routes = [
   {
     path: '/question/:id',
     name: 'questionId',
+    meta: { title: '问题内容' },
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -58,11 +64,12 @@ const routes = [
         // UserProfile 会被渲染在 User 的 <router-view> 中
         path: '/question/:id/answer/:id2',
         name: 'questionIdAnswer',
+        meta: { title: '{id2}' },
         component: () => import(/* webpackChunkName: "question" */ '../views/zh-Answer.vue')
       }
     ]
   }
-]
+)
 
 routes.push(
   {
@@ -79,77 +86,59 @@ routes.push(
       { // 设置
         path: 'set',
         name: 'ucSet',
-        meta: {
-          title: '设置信息-'
-        },
-        component: () => import('../views/userCenter/userCenter-set.vue')
+        meta: { title: '设置信息' },
+        component: () => import('../views/userCenter/set.vue')
       },
       { // 我的提问
         path: 'question',
         name: 'ucQuestion',
-        meta: {
-          title: '我的提问-'
-        },
-        component: () => import('../views/userCenter/userCenter-question.vue')
+        meta: { title: '我的提问' },
+        component: () => import('../views/userCenter/question.vue')
       },
       { // 我的回答
         path: 'answer',
         name: 'ucAnswer',
-        meta: {
-          title: '我的回答-'
-        },
-        component: () => import('../views/userCenter/userCenter-answer.vue')
+        meta: { title: '我的回答' },
+        component: () => import('../views/userCenter/answer.vue')
       },
       { // 我的讨论
         path: 'discuss',
         name: 'ucDiscuss',
-        meta: {
-          title: '我的讨论-'
-        },
-        component: () => import('../views/userCenter/userCenter-discuss.vue')
+        meta: { title: '我的讨论' },
+        component: () => import('../views/userCenter/discuss.vue')
       },
       { // 收藏夹
         path: 'favorite',
         name: 'ucFavorite',
-        meta: {
-          title: '收藏夹-'
-        },
-        component: () => import('../views/userCenter/userCenter-favorite.vue'),
+        meta: { title: '收藏夹' },
+        component: () => import('../views/userCenter/favorite.vue'),
         children: [
           { // 设置收藏夹的分组路由
             path: ':group',
             name: 'favGroup',
             props: true,
-            meta: {
-              title: '{group}'
-            },
-            component: () => import('../views/userCenter/userCenter-favorite-type.vue')
+            meta: { title: '{group}' },
+            component: () => import('../views/userCenter/favorite-type.vue')
           }
         ]
       },
       { // 浏览记录
         path: 'history',
         name: 'ucHistory',
-        meta: {
-          title: '浏览记录-'
-        },
-        component: () => import('../views/userCenter/userCenter-history.vue')
+        meta: { title: '浏览记录' },
+        component: () => import('../views/userCenter/history.vue')
       },
       { // 粉丝
         path: 'fans',
         name: 'ucFans',
-        meta: {
-          title: '粉丝-'
-        },
-        component: () => import('../views/userCenter/userCenter-fans.vue')
+        meta: { title: '粉丝' },
+        component: () => import('../views/userCenter/fans.vue')
       },
       { // 关注
         path: 'follow',
         name: 'ucFollow',
-        meta: {
-          title: '关注-'
-        },
-        component: () => import('../views/userCenter/userCenter-follow.vue')
+        meta: { title: '关注' },
+        component: () => import('../views/userCenter/follow.vue')
       }
     ]
   }
@@ -160,9 +149,9 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  // ...
-  // alert('router里面设置的路由监听——beforeEach')
-  next()
-})
+// router.beforeEach((to, from, next) => {
+// ...
+// alert('router里面设置的路由监听——beforeEach')
+//  next()
+// })
 export default router

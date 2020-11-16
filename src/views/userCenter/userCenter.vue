@@ -36,48 +36,6 @@ export default {
     const history = router.options.history
     const routes = router.options.routes
 
-    router.beforeEach((to, from, next) => {
-      // 可以验证是否需要登录等
-      // alert(to.meta.requiresAuth)
-      // alert(to.fullPath)
-      if (to.matched.some(record => record.meta.requiresAuth)) {
-        // this route requires auth, check if logged in
-        // if not, redirect to login page.
-        if (!window.__isUserOnline) {
-          next({
-            path: '/login',
-            query: { redirect: to.fullPath }
-          })
-        } else {
-          next()
-        }
-      } else {
-        next() // 确保一定要调用 next()
-      }
-      console.log('全局检测——beforeEach')
-      next()
-    })
-
-    router.afterEach((to, from) => {
-      // 可以记录用户的浏览记录
-      // 可以修改浏览器的title
-      for (let i = 0; i < to.matched.length; i += 1) {
-        const title = to.matched[i].meta.title
-        if (i === 0) {
-          document.title = title
-        } else {
-          if (title.indexOf('{') >= 0) {
-            document.title = title.replace(title, to.params[title.replace('{', '').replace('}', '')]) + '-' + document.title
-          } else {
-            document.title = title + document.title
-          }
-        }
-      }
-      console.log('全局检测——afterEach')
-      console.log(to)
-      console.log('——————————————————')
-    })
-
     return {
       value,
       currentRoute,
