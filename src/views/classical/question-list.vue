@@ -1,12 +1,12 @@
 <template>
-  <div id="nav">
-    我是知乎de问题列表，推荐问题、人气问题、最新问题、邀请回答<br>
+  <div id="mainconect">
+    提问列表，按照分类显示<br>
     <a-tabs tab-position="top" type="editable-card" animated="false">
       <a-tab-pane key="1">
         <template v-slot:tab>
           <span>
             <apple-outlined />
-            <router-link to="/question/list">route</router-link>
+            <router-link :to="{name:'questionList', params: { type:'recommend',typeId:'1', typeName:'推荐提问'}}">推荐提问</router-link>
           </span>
         </template>
         Tab 1问题列表{{$route}}
@@ -15,7 +15,7 @@
         <template v-slot:tab>
           <span>
             <android-outlined />
-            <router-link to="/question/list/hot">router</router-link>
+            <router-link :to="{name:'questionList', params: { type:'hot',typeId:'2', typeName:'人气提问'}}">人气提问</router-link>
           </span>
         </template>
         Tab 2问题列表{{$router}}
@@ -24,7 +24,7 @@
         <template v-slot:tab>
           <span>
             <android-outlined />
-            <router-link to="/question/list/new">currentRoute</router-link>
+            <router-link :to="{name:'questionList', params: { type:'new',typeId:'3', typeName:'最新提问'}}">最新提问</router-link>
           </span>
         </template>
         Tab 3问题列表{{$route}}
@@ -33,7 +33,7 @@
         <template v-slot:tab>
           <span>
             <android-outlined />
-            <router-link to="/question/list/invite">routes</router-link>
+            <router-link :to="{name:'questionList', params: { type:'invite',typeId:'4', typeName:'邀您回答'}}">邀您回答</router-link>
           </span>
         </template>
         Tab 4问题列表{{$route}}
@@ -49,7 +49,7 @@ import { ref, reactive, getCurrentInstance, watch } from 'vue'
 import { AppleOutlined, AndroidOutlined } from '@ant-design/icons-vue'
 
 export default {
-  name: 'zh-question',
+  name: 'zh-question-list',
   components: {
     AppleOutlined,
     AndroidOutlined

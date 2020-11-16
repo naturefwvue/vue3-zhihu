@@ -1,5 +1,5 @@
 <template>
-  <div id="nav">
+  <div id="mainconect">
     我是知乎de问题展示<br>
     <div>
       展示问题 {{ $route.path }}{{$route.params}}

@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// import Home from '../views/Home.vue'
-import index from '../views/zhihu.vue'
+import home from '../views/home.vue'
 
 // 基础路由
 const routes = [
@@ -8,7 +7,7 @@ const routes = [
     path: '/',
     name: 'Home',
     meta: { title: '路由演示' },
-    component: index
+    component: home
   },
   {
     path: '/404',
@@ -25,49 +24,55 @@ const routes = [
 
 // 网站模块路由
 routes.push(
-  {
-    path: '/question',
-    name: 'question',
-    meta: { title: '问题列表' },
-    component: () => import(/* webpackChunkName: "question" */ '../views/zh-Question-list.vue')
-  },
-  {
+  { // 提问列表，重写，便于外部调用
     path: '/question/list',
-    name: 'questionWaiting',
-    meta: { title: '问题列表' },
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import('../views/zh-Question-list.vue'),
+    name: 'questions',
+    redirect: { name: 'questionList', params: { type: 'recommend', typeId: '1', typeName: '推荐提问' } }
+  },
+  { // 提问列表
+    path: '/question/list/:type',
+    name: 'questionList',
+    meta: { title: '{typeName}-提问列表-路由演示' },
+    component: () => import('../views/classical/question-list.vue')
+  },
+  { // 提问内容 + 回答列表 // 演示命名视图
+    path: '/question/:questionId',
+    name: 'questionAnswerList',
+    meta: { title: '问题内容+问题回答列表' },
+    component: () => import('../views/classical/question-answer.vue'),
     children: [
       {
-        // 当 /user/:id/profile 匹配成功，
-        // UserProfile 会被渲染在 User 的 <router-view> 中
-        path: '/question/list/:type',
-        name: 'questionIdAnswerHot',
-        meta: { title: '{type}' },
-        component: () => import('../views/zh-Question-list.vue')
+        path: '',
+        default: () => import('../views/classical/question-answer-question.vue'),
+        answerList: () => import('../views/classical/question-answer-list.vue')
       }
     ]
   },
-  {
-    path: '/question/:id',
-    name: 'questionId',
-    meta: { title: '问题内容' },
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "question" */ '../views/zh-Question.vue'),
+  { // 填写提问
+    path: '/question/write',
+    name: 'question-write',
+    meta: { title: '问题列表' },
+    component: () => import('../views/classical/question-list.vue')
+  },
+  { // 回答列表
+    path: '/answer/list',
+    name: 'answerList',
+    meta: { title: '回答列表' },
+    component: () => import('../views/classical/answer-list.vue'),
     children: [
       {
-        // 当 /user/:id/profile 匹配成功，
-        // UserProfile 会被渲染在 User 的 <router-view> 中
-        path: '/question/:id/answer/:id2',
-        name: 'questionIdAnswer',
-        meta: { title: '{id2}' },
-        component: () => import(/* webpackChunkName: "question" */ '../views/zh-Answer.vue')
+        path: ':type',
+        name: 'questionListType',
+        meta: { title: '{type}' },
+        component: () => import('../views/classical/question.vue')
       }
     ]
+  },
+  { // 写回答
+    path: '/answer/write',
+    name: 'answer-write',
+    meta: { title: '问题列表' },
+    component: () => import('../views/classical/question-list.vue')
   }
 )
 

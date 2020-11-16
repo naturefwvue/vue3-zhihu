@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { ref, reactive, getCurrentInstance, watch } from 'vue'
+import { ref, reactive } from 'vue'
 import { AppleOutlined, AndroidOutlined } from '@ant-design/icons-vue'
 
 export default {
@@ -69,33 +69,10 @@ export default {
     AndroidOutlined
   },
   setup (props, conext) {
-    const { ctx } = getCurrentInstance()
-
     // alert(ctx.$router.currentRoute.value.matched[0].path)
     // console.log(ctx.$router.currentRoute.value.matched[0])
     const value = ref('测试')
     const route = reactive({})
-    if (typeof ctx.$router.currentRoute !== 'undefined') {
-      route.value = {
-        // currentRoute: ctx.$router.currentRoute.value,
-        path: ctx.$router.currentRoute.value.path,
-        params: ctx.$router.currentRoute.value.params,
-        query: ctx.$router.currentRoute.value.query,
-        hash: ctx.$router.currentRoute.value.hash
-      }
-      // value.value = ctx.$router.currentRoute.value
-      // conext // .$route.params.username
-    }
-
-    watch(() => ctx.$router.currentRoute.value.path,
-      (val) => {
-        route.value.path = val
-      })
-    watch(() => ctx.$router.currentRoute.value.params,
-      (val) => {
-        route.value.params = val
-      })
-
     return {
       value,
       route

@@ -1,5 +1,5 @@
 <template>
-  <div id="nav">
+  <div id="mainconect">
     我是知乎de回答文章<br>
     {{value}}<br>---
     {{ctx1}}

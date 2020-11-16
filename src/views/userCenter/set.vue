@@ -1,5 +1,5 @@
 <template><!--用户中心-->
-  <div id="uc" style="line-height: 30px;text-align:left;">
+  <div id="mainconect">
     设置
     currentRoute:{{currentRoute.fullPath}}<br>
     history:{{history.state}}

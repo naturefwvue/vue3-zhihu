@@ -90,15 +90,19 @@ export default {
     router.afterEach((to, from) => {
       // 可以修改浏览器的title
       for (let i = 0; i < to.matched.length; i += 1) {
-        const title = to.matched[i].meta.title
+        // 获取路由设置里面的title
+        let title = to.matched[i].meta.title
+        // title里面的{插值}替换为参数值
+        if (title.indexOf('{') >= 0) {
+          const match = title.substring(1, title.indexOf('}'))
+          // alert(match)
+          title = title.replace('{' + match + '}', to.params[match])
+        }
+        // 设置网站title
         if (i === 0) {
           document.title = title
         } else {
-          if (title.indexOf('{') >= 0) {
-            document.title = title.replace(title, to.params[title.replace('{', '').replace('}', '')]) + '-' + document.title
-          } else {
-            document.title = title + document.title
-          }
+          document.title = title + '-' + document.title
         }
       }
 
@@ -116,6 +120,10 @@ export default {
 }
 </script>
 <style>
+#mainconect {
+  line-height: 30px;
+  text-align:left;
+}
 #components-layout-demo-basic {
   text-align: center;
 }

@@ -1,5 +1,5 @@
 <template><!--用户中心-->
-  <div id="uc" style="line-height: 30px;text-align:left;">
+  <div id="mainconect">
     我的收藏夹（分类） <br>
     <template v-for="(item, index) in favoriteList" :key="'fav_'+index">
       <router-link :to="{ name: 'favGroup', params: { groupId: item.id, group:item.title }}">
