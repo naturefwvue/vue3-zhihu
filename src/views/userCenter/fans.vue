@@ -10,9 +10,22 @@
 <script>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+const viewName = 'uc-fans'
 
 export default {
   name: 'uc-fans',
+  beforeRouteEnter (to, from, next) {
+    console.log(`${viewName}-beforeRouteEnter`)
+    next()
+  },
+  beforeRouteUpdate (to, from, next) {
+    console.log(`${viewName}-beforeRouteUpdate`)
+    next()
+  },
+  beforeRouteLeave (to, from, next) {
+    console.log(`${viewName}-beforeRouteLeave`)
+    next()
+  },
   setup (props, conext) {
     const router = useRouter()
 

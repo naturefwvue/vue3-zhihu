@@ -1,7 +1,8 @@
 <template>
   <div id="mainconect">
-    回答列表<br>
-    <input>
+    <div>
+      {{questionId}}提问的回答列表
+    </div>
   </div>
 </template>
 
@@ -9,13 +10,16 @@
 import { ref, reactive } from 'vue'
 
 export default {
-  name: 'zh-answer-list',
-  components: {},
+  name: 'zh-question-main-answers',
+  props: {
+    questionId: Number
+  },
   setup (props, conext) {
     // alert(ctx.$router.currentRoute.value.matched[0].path)
     // console.log(ctx.$router.currentRoute.value.matched[0])
     const value = ref('测试')
     const route = reactive({})
+    console.log('回答列表：' + props.questionId)
 
     return {
       value,

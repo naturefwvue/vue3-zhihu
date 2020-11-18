@@ -1,27 +1,31 @@
 <template>
   <div id="mainconect">
     <div>
-      提问内容222
+      提问内容和回答列表
+      <router-view />
     </div>
-    {{value}}<br>
-    {{route}}
+    <div>
+      <router-view name="answerList"/>
+    </div>
   </div>
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 export default {
-  name: 'zh-question-answer-question',
+  name: 'zh-question-main',
   setup (props, conext) {
     // alert(ctx.$router.currentRoute.value.matched[0].path)
     // console.log(ctx.$router.currentRoute.value.matched[0])
     const value = ref('测试')
-    const route = reactive({})
+    const router = useRouter()
+    const currentRoute = router.currentRoute
 
     return {
       value,
-      route
+      currentRoute
     }
   }
 }

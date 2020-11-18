@@ -36,15 +36,19 @@ routes.push(
     component: () => import('../views/classical/question-list.vue')
   },
   { // 提问内容 + 回答列表 // 演示命名视图
-    path: '/question/:questionId',
-    name: 'questionAnswerList',
+    path: '/question',
     meta: { title: '问题内容+问题回答列表' },
-    component: () => import('../views/classical/question-answer.vue'),
+    component: () => import('../views/classical/question-main.vue'),
     children: [
       {
-        path: '',
-        default: () => import('../views/classical/question-answer-question.vue'),
-        answerList: () => import('../views/classical/question-answer-list.vue')
+        path: ':questionId',
+        name: 'questionAnswerList',
+        props: true,
+        meta: { title: '{questionId}' },
+        components: {
+          default: () => import('../views/classical/question-main-introduce.vue'),
+          answerList: () => import('../views/classical/question-main-answers.vue')
+        }
       }
     ]
   },
@@ -52,7 +56,7 @@ routes.push(
     path: '/question/write',
     name: 'question-write',
     meta: { title: '问题列表' },
-    component: () => import('../views/classical/question-list.vue')
+    component: () => import('../views/classical/question-write.vue')
   },
   { // 回答列表
     path: '/answer/list',
@@ -72,7 +76,7 @@ routes.push(
     path: '/answer/write',
     name: 'answer-write',
     meta: { title: '问题列表' },
-    component: () => import('../views/classical/question-list.vue')
+    component: () => import('../views/classical/answer-write.vue')
   }
 )
 

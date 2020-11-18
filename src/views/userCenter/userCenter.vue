@@ -23,9 +23,22 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 // import favorite from './userCenter-favorite.vue'
+const viewName = 'uc-main'
 
 export default {
   name: 'uc-main',
+  beforeRouteEnter (to, from, next) {
+    console.log(`${viewName}-beforeRouteEnter`)
+    next()
+  },
+  beforeRouteUpdate (to, from, next) {
+    console.log(`${viewName}-beforeRouteUpdate`)
+    next()
+  },
+  beforeRouteLeave (to, from, next) {
+    console.log(`${viewName}-beforeRouteLeave`)
+    next()
+  },
   setup (props, conext) {
     const router = useRouter()
 

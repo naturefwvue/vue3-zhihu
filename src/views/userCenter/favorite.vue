@@ -17,9 +17,22 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 // import favorite from './userCenter-favorite-type.vue'
+const viewName = 'uc-favorite'
 
 export default {
   name: 'uc-favorite',
+  beforeRouteEnter (to, from, next) {
+    console.log(`${viewName}-beforeRouteEnter`)
+    next()
+  },
+  beforeRouteUpdate (to, from, next) {
+    console.log(`${viewName}-beforeRouteUpdate`)
+    next()
+  },
+  beforeRouteLeave (to, from, next) {
+    console.log(`${viewName}-beforeRouteLeave`)
+    next()
+  },
   setup (props, conext) {
     const router = useRouter()
 

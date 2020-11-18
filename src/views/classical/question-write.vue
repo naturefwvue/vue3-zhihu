@@ -1,13 +1,8 @@
 <template>
   <div id="mainconect">
-    <div>外框{{currentRoute.matched}}
-      <router-view />
-    </div>
     <div>
-      <router-view name="answerList"/>
+      提出问题
     </div>
-    {{value}}<br>
-    {{route}}
   </div>
 </template>
 
@@ -16,7 +11,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 export default {
-  name: 'zh-question-answer',
+  name: 'zh-question-write',
   setup (props, conext) {
     // alert(ctx.$router.currentRoute.value.matched[0].path)
     // console.log(ctx.$router.currentRoute.value.matched[0])
