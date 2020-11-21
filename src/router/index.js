@@ -20,7 +20,8 @@ const routes = [
     name: 'login',
     meta: { title: '用户登录' },
     component: () => import('../views/login.vue')
-  }]
+  }
+]
 
 // 网站模块路由
 routes.push(
@@ -80,6 +81,7 @@ routes.push(
   }
 )
 
+// 用户中心的路由设置
 routes.push(
   {
     path: '/userCenter',

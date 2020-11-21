@@ -27,16 +27,15 @@ export default {
   },
   setup (props, { root }) {
     const val = ref('33')
-    // val.value = root
 
     const testHistory = (e) => {
       // 没有啥效果 pushState
       // history.replaceState('11', '11', '/question/list')
       // 还是没有效果
-      history.pushState('11', '11', '/userCenter/set1')
-      history.pushState('11', '11', '/userCenter/set2')
+      // history.pushState('11', '11', '/userCenter/set1')
       e.preventDefault()
-      history.go(-1)
+      // window.history.pushState('11', '11', '/userCenter/set')
+      window.history.go(-2) // 可以后退
       // alert(history.length)
       return false
     }
