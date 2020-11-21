@@ -7,6 +7,7 @@ const routes = [
     path: '/',
     name: 'Home',
     meta: { title: '路由演示' },
+    redirect: { name: 'main', params: { type: 'recommend', typeId: '1', typeName: '推荐提问' } },
     component: home
   },
   {
@@ -22,6 +23,34 @@ const routes = [
     component: () => import('../views/login.vue')
   }
 ]
+
+// 网站首页路由
+routes.push(
+  { // 首页推荐
+    path: '/recommend',
+    name: 'mainRecommend',
+    component: () => import('../views/classical/question-list.vue')
+  },
+  { // 首页关注
+    path: '/follow',
+    name: 'mainFollow',
+    component: () => import('../views/classical/question-list.vue')
+  },
+  { // 首页热榜
+    path: '/hot/:type',
+    name: 'mainHot',
+    component: () => import('../views/classical/question-list.vue')
+  }
+)
+
+// 网站等你来答
+routes.push(
+  { // 网站等你来答
+    path: '/question/waiting/:type',
+    name: 'questionWaiting',
+    component: () => import('../views/classical/question-list.vue')
+  }
+)
 
 // 网站模块路由
 routes.push(
@@ -81,48 +110,75 @@ routes.push(
   }
 )
 
-// 用户中心的路由设置
+// 我的主页的路由设置
 routes.push(
   {
-    path: '/userCenter',
-    name: 'userCenter',
+    path: '/people/:userNick',
+    name: 'people',
+    props: true,
     meta: {
-      title: '用户中心',
-      requiresAuth: true
+      title: '我的主页',
+      requiresAuth: false
     },
-    redirect: { name: 'ucAnswer' },
+    // redirect: { name: 'ucAnswer' },
     // 用户中心
     component: () => import('../views/userCenter/userCenter.vue'),
     children: [
-      { // 设置
-        path: 'set',
-        name: 'ucSet',
-        meta: { title: '设置信息' },
-        component: () => import('../views/userCenter/set.vue')
+      { // 动态
+        path: '',
+        name: 'ucDynamic',
+        props: true,
+        meta: { title: '动态' },
+        component: () => import('../views/userCenter/dynamic.vue')
+      },
+      { // 回答
+        path: 'answers',
+        name: 'ucAnswers',
+        props: true,
+        meta: { title: '回答' },
+        component: () => import('../views/userCenter/answers.vue')
+      },
+      { // 视频
+        path: 'zvideos',
+        name: 'ucZvideos',
+        props: true,
+        meta: { title: '视频' },
+        component: () => import('../views/userCenter/zvideos.vue')
       },
       { // 我的提问
-        path: 'question',
-        name: 'ucQuestion',
-        meta: { title: '我的提问' },
-        component: () => import('../views/userCenter/question.vue')
+        path: 'asks',
+        name: 'ucAsks',
+        props: true,
+        meta: { title: '提问' },
+        component: () => import('../views/userCenter/asks.vue')
       },
-      { // 我的回答
-        path: 'answer',
-        name: 'ucAnswer',
-        meta: { title: '我的回答' },
-        component: () => import('../views/userCenter/answer.vue')
+      { // 文章
+        path: 'posts',
+        name: 'ucPosts',
+        props: true,
+        meta: { title: '文章' },
+        component: () => import('../views/userCenter/posts.vue')
       },
-      { // 我的讨论
-        path: 'discuss',
-        name: 'ucDiscuss',
-        meta: { title: '我的讨论' },
-        component: () => import('../views/userCenter/discuss.vue')
+      { // 专栏
+        path: 'columns',
+        name: 'ucColumns',
+        props: true,
+        meta: { title: '专栏' },
+        component: () => import('../views/userCenter/columns.vue')
       },
-      { // 收藏夹
-        path: 'favorite',
-        name: 'ucFavorite',
-        meta: { title: '收藏夹' },
-        component: () => import('../views/userCenter/favorite.vue'),
+      { // 想法
+        path: 'pins',
+        name: 'ucPins',
+        props: true,
+        meta: { title: '想法' },
+        component: () => import('../views/userCenter/pins.vue')
+      },
+      { // 收藏
+        path: 'collections',
+        name: 'ucCollections',
+        props: true,
+        meta: { title: '收藏' },
+        component: () => import('../views/userCenter/collections.vue'),
         children: [
           { // 设置收藏夹的分组路由
             path: ':group',
@@ -133,23 +189,12 @@ routes.push(
           }
         ]
       },
-      { // 浏览记录
-        path: 'history',
-        name: 'ucHistory',
-        meta: { title: '浏览记录' },
-        component: () => import('../views/userCenter/history.vue')
-      },
-      { // 粉丝
-        path: 'fans',
-        name: 'ucFans',
-        meta: { title: '粉丝' },
-        component: () => import('../views/userCenter/fans.vue')
-      },
       { // 关注
-        path: 'follow',
-        name: 'ucFollow',
+        path: 'following',
+        name: 'ucFollowing',
+        props: true,
         meta: { title: '关注' },
-        component: () => import('../views/userCenter/follow.vue')
+        component: () => import('../views/userCenter/following.vue')
       }
     ]
   }

@@ -4,27 +4,16 @@
     currentRoute:{{currentRoute.fullPath}}<br>
     history:{{history.state}}
   </div>
-  <router-view/>
 </template>
 
 <script>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-const viewName = 'uc-set'
 
 export default {
   name: 'uc-set',
-  beforeRouteEnter (to, from, next) {
-    console.log(`${viewName}-beforeRouteEnter`)
-    next()
-  },
-  beforeRouteUpdate (to, from, next) {
-    console.log(`${viewName}-beforeRouteUpdate`)
-    next()
-  },
-  beforeRouteLeave (to, from, next) {
-    console.log(`${viewName}-beforeRouteLeave`)
-    next()
+  props: {
+    userId: Number
   },
   setup (props, conext) {
     const router = useRouter()

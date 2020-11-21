@@ -4,7 +4,7 @@
     <router-link to="/">首页</router-link> |
     <router-link :to="{name:'questions'}">问题列表</router-link> |
     <router-link :to="{name:'answerList'}">回答列表</router-link> |
-    <router-link to="/userCenter">用户中心</router-link> |
+    <router-link :to="{name:'people',params: { userId:123, userNick: 'jyk0011' }}">用户中心</router-link> |
   </div>
 </template>
 

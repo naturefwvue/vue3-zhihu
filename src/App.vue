@@ -24,44 +24,9 @@ export default {
     Navi
   },
   setup (props) {
-    // alert('首页setup')
-
     const router = useRouter()
-    // console.log('router')
-    // console.log(router)
-
-    // const routes = router.getRoutes()
-    // console.log('routes')
-    // console.log(routes)
-    // const route = router.currentRoute.value
-    // console.log('route')
-    // console.log(route)
-    /*
-      fullPath: "/"
-      hash: ""
-      matched: []
-      meta: {}
-      name: undefined
-      params: {}
-      path: "/"
-      query: {}
-      redirectedFrom: undefined
 
     router.beforeEach((to, from, next) => {
-      // ...
-      console.log('to')
-      console.log(to)
-      console.log('from')
-      console.log(from)
-      next()
-    })
-    */
-
-    router.beforeEach((to, from, next) => {
-      // 可以验证是否需要登录等
-      // alert(to.meta.requiresAuth)
-      // alert(to.fullPath)
-
       // 验证404
       if (to.matched.length === 0) {
         next({ path: '/404' })
@@ -83,7 +48,6 @@ export default {
         next() // 确保一定要调用 next()
       }
 
-      console.log('全局检测——beforeEach')
       next()
     })
 
@@ -95,7 +59,6 @@ export default {
         // title里面的{插值}替换为参数值
         if (title.indexOf('{') >= 0) {
           const match = title.substring(1, title.indexOf('}'))
-          // alert(match)
           title = title.replace('{' + match + '}', to.params[match])
         }
         // 设置网站title
@@ -108,9 +71,6 @@ export default {
 
       // 可以记录用户的浏览记录
       // path = to.fullPath
-      console.log('全局检测——afterEach')
-      console.log(to)
-      console.log('——————————————————')
     })
 
     return {

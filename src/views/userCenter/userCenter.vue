@@ -1,16 +1,17 @@
 <template><!--用户中心-->
   <div id="mainconect">
-    用户中心
+    用户中心：{{userId}}-{{userNick}}
     <a-row>
       <a-col :span="3">
-        <router-link to="/userCenter/set">设置</router-link> <br>
-        <router-link :to="{name:'ucQuestion'}">我的提问</router-link> <br>
-        <router-link :to="{name:'ucAnswer'}">我的回答</router-link> <br>
-        <router-link :to="{name:'ucDiscuss'}">我的讨论</router-link> <br>
-        <router-link :to="{name:'ucFavorite'}">收藏夹</router-link> <br>
-        <router-link :to="{name:'ucHistory'}">浏览记录</router-link> <br>
-        <router-link :to="{name:'ucFans'}">粉丝</router-link> <br>
-        <router-link :to="{name:'ucFollow'}">关注</router-link> <br>
+        <router-link :to="{name:'ucDynamic', params: { userId:userId}}">动态</router-link> <br>
+        <router-link :to="{name:'ucAnswers', params: { userId:userId}}">回答</router-link> <br>
+        <router-link :to="{name:'ucZvideos', params: { userId:userId}}">视频</router-link> <br>
+        <router-link :to="{name:'ucAsks', params: { userId:userId}}">提问</router-link> <br>
+        <router-link :to="{name:'ucPosts', params: { userId:userId}}">文章</router-link> <br>
+        <router-link :to="{name:'ucColumns', params: { userId:userId}}">专栏</router-link> <br>
+        <router-link :to="{name:'ucPins', params: { userId:userId}}">想法</router-link> <br>
+        <router-link :to="{name:'ucCollections', params: { userId:userId}}">收藏夹</router-link> <br>
+        <router-link :to="{name:'ucFollowing', params: { userId:userId}}">关注</router-link> <br>
       </a-col>
       <a-col :span="21">
         <router-view></router-view>
@@ -23,21 +24,12 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 // import favorite from './userCenter-favorite.vue'
-const viewName = 'uc-main'
 
 export default {
   name: 'uc-main',
-  beforeRouteEnter (to, from, next) {
-    console.log(`${viewName}-beforeRouteEnter`)
-    next()
-  },
-  beforeRouteUpdate (to, from, next) {
-    console.log(`${viewName}-beforeRouteUpdate`)
-    next()
-  },
-  beforeRouteLeave (to, from, next) {
-    console.log(`${viewName}-beforeRouteLeave`)
-    next()
+  props: {
+    userId: Number,
+    userNick: String
   },
   setup (props, conext) {
     const router = useRouter()
