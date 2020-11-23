@@ -1,19 +1,20 @@
 <template>
   <div id="mainconect">
-    回答列表<br>
-    <input>
+    {{postId}}的文章内容<br>
+    评论列表
   </div>
 </template>
 
 <script>
 import { ref, reactive } from 'vue'
+// import { AppleOutlined, AndroidOutlined } from '@ant-design/icons-vue'
 
 export default {
-  name: 'zh-answer-list',
-  components: {},
+  name: 'zh-main-post',
+  props: {
+    postId: Number
+  },
   setup (props, conext) {
-    // alert(ctx.$router.currentRoute.value.matched[0].path)
-    // console.log(ctx.$router.currentRoute.value.matched[0])
     const value = ref('测试')
     const route = reactive({})
 

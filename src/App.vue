@@ -4,7 +4,7 @@
       <a-layout-header><!--导航-->
         <navi></navi>
       </a-layout-header>
-      <a-layout style="margin:0px auto;width:1050px;">
+      <a-layout style="margin:0px auto;width:650px;">
         <a-layout-content><!--中间路由-->
           <router-view></router-view>
         </a-layout-content>
@@ -89,7 +89,7 @@ export default {
 }
 #components-layout-demo-basic .ant-layout-header,
 #components-layout-demo-basic .ant-layout-footer {
-  background: #7dbcea;
+  background: #bdd6e7;
   color: #fff;
 }
 #components-layout-demo-basic .ant-layout-footer {
