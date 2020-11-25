@@ -22,14 +22,13 @@ routes.push(
   { // 首页推荐
     path: '/',
     name: 'mainHome',
-    meta: { title: '路由演示' },
-    // redirect: { name: 'main', params: { type: 'recommend', typeId: '1', typeName: '推荐提问' } },
+    meta: { title: '首页推荐' },
     component: home
   },
   { // 首页关注
     path: '/follow',
     name: 'mainFollow',
-    meta: { title: '关注' },
+    meta: { title: '首页关注' },
     component: () => import('../views/main/follow.vue')
   },
   { // 首页热榜
@@ -68,26 +67,26 @@ routes.push(
     name: 'post',
     props: true,
     meta: { title: '{title}-文章' },
-    component: () => import('../views/main/post.vue')
+    component: () => import('../views/question/post.vue')
   },
   { // 写文章
     path: '/p/write',
     name: 'answer-write',
     meta: { title: '问题列表' },
-    component: () => import('../views/main/post-write.vue')
+    component: () => import('../views/question/post-write.vue')
   },
   { // 提问列表，重写，便于外部调用
     path: '/question/:questionId',
     name: 'questions',
     props: true,
-    meta: { title: '{titme}' },
+    meta: { title: '{title}' },
     component: () => import('../views/question/question-list.vue')
   },
   { // 提问内容+回答内容+其他回答列表
     path: '/question/:questionId/answer/:anserrId',
     name: 'questionAnswer',
     props: true,
-    meta: { title: '{titme}' },
+    meta: { title: '{title}' },
     component: () => import('../views/question/question-answer.vue')
   }
 )
@@ -184,6 +183,7 @@ routes.push(
 )
 
 // 我的设置
+/*
 routes.push(
   {
     path: '/settings',
@@ -235,6 +235,8 @@ routes.push(
     ]
   }
 )
+*/
+
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes

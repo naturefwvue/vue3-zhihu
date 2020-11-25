@@ -1,7 +1,7 @@
-<template><!--用户中心-->
+<template>
   <div id="mainconect">
     <a-row>
-      <a-col :span="3">
+      <a-col :span="7">
         {{userId}}的收藏夹<br>
         收藏夹分类：<br>
         <template v-for="(item, index) in favoriteList"
@@ -17,7 +17,7 @@
             </router-link> <br>
         </template>
       </a-col>
-      <a-col :span="21">
+      <a-col :span="17">
         <router-view></router-view>
       </a-col>
     </a-row>
@@ -29,7 +29,7 @@ import { ref } from 'vue'
 // import { useRouter } from 'vue-router'
 
 export default {
-  name: 'uc-collections',
+  name: 'uc-collections-type',
   props: {
     userId: Number
   },

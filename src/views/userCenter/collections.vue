@@ -10,7 +10,7 @@
 // import { useRouter } from 'vue-router'
 
 export default {
-  name: 'uc-collections-group',
+  name: 'uc-collections',
   props: {
     groupId: Number
   },

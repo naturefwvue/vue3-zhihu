@@ -1,5 +1,5 @@
 <template>
-  <div id="n404">
+  <div id="mainconect">
     没找到网页
     <br>
   </div>

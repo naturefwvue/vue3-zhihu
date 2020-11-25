@@ -4,7 +4,7 @@
     <router-link :to="{name:'mainHome'}">首页</router-link> |
     <router-link :to="{name:'questionWaiting'}">等你来答</router-link> |
     <router-link :to="{name:'people',params: { userId:123, userNick: 'jyk0011' }}">用户中心</router-link> |
-    <router-link :to="{name:'userSet'}">用户设置</router-link> |
+    <router-link to="/settings">用户设置</router-link> |
   </div>
 </template>
 

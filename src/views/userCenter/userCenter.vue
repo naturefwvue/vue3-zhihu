@@ -1,4 +1,4 @@
-<template><!--用户中心-->
+<template>
   <div id="mainconect">
     用户中心：{{userId}}-{{userNick}}
     <a-row>
