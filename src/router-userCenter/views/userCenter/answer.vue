@@ -2,7 +2,8 @@
   <div id="mainconect">
     我的回答列表
     currentRoute:{{currentRoute.fullPath}}<br>
-    history:{{history.state}}
+    history:{{history.state}}<br>
+    <input type="text" value="123">
   </div>
   <router-view/>
 </template>

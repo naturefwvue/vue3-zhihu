@@ -40,11 +40,11 @@ export default {
     const history = router.options.history
     const routes = router.options.routes
 
-    alert(props.groupId)
+    // alert(props.groupId)
 
     // 监控参数变化
     watch(() => props.groupId, (newValue, oldValue) => {
-      alert(newValue)
+      // alert(newValue)
     })
     return {
       value,

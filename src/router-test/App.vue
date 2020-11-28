@@ -4,7 +4,7 @@
       <a-layout-header><!--导航-->
         <navi></navi>
       </a-layout-header>
-      <a-layout style="margin:0px auto;width:650px;">
+      <a-layout style="margin:0px auto;width:1050px;">
         <a-layout-content><!--中间路由-->
           <router-view></router-view>
         </a-layout-content>
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import Navi from '@/components/web/navi.vue'
+import Navi from './components/web/navi.vue'
 import { useRouter } from 'vue-router'
 
 export default {
@@ -24,18 +24,51 @@ export default {
     Navi
   },
   setup (props) {
+    // alert('首页setup')
+
     const router = useRouter()
+    // console.log('router')
+    // console.log(router)
+
+    // const routes = router.getRoutes()
+    // console.log('routes')
+    // console.log(routes)
+    // const route = router.currentRoute.value
+    // console.log('route')
+    // console.log(route)
+    /*
+      fullPath: "/"
+      hash: ""
+      matched: []
+      meta: {}
+      name: undefined
+      params: {}
+      path: "/"
+      query: {}
+      redirectedFrom: undefined
 
     router.beforeEach((to, from, next) => {
+      // ...
+      console.log('to')
+      console.log(to)
+      console.log('from')
+      console.log(from)
+      next()
+    })
+    */
+
+    router.beforeEach((to, from, next) => {
+      console.log('————————开始——————————')
+      console.log('全局检测——beforeEach')
+
       // 验证404
       if (to.matched.length === 0) {
         next({ path: '/404' })
+        return
       }
 
       // 验证是否需要登录
       if (to.matched.some(record => record.meta.requiresAuth)) {
-        // this route requires auth, check if logged in
-        // if not, redirect to login page.
         if (!window.__isUserOnline) {
           next({
             path: '/login',
@@ -47,8 +80,7 @@ export default {
       } else {
         next() // 确保一定要调用 next()
       }
-
-      next()
+      // next()
     })
 
     router.afterEach((to, from) => {
@@ -59,6 +91,7 @@ export default {
         // title里面的{插值}替换为参数值
         if (title.indexOf('{') >= 0) {
           const match = title.substring(1, title.indexOf('}'))
+          // alert(match)
           title = title.replace('{' + match + '}', to.params[match])
         }
         // 设置网站title
@@ -71,6 +104,14 @@ export default {
 
       // 可以记录用户的浏览记录
       // path = to.fullPath
+      console.log('全局检测——afterEach')
+      console.log(to)
+      console.log('————————结束——————————')
+    })
+
+    router.beforeResolve((to, from, next) => {
+      console.log('全局检测——beforeResolve')
+      next()
     })
 
     return {
@@ -89,7 +130,7 @@ export default {
 }
 #components-layout-demo-basic .ant-layout-header,
 #components-layout-demo-basic .ant-layout-footer {
-  background: #bdd6e7;
+  background: #7dbcea;
   color: #fff;
 }
 #components-layout-demo-basic .ant-layout-footer {

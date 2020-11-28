@@ -90,7 +90,7 @@ routes.push(
       title: '用户中心',
       requiresAuth: true
     },
-    redirect: { name: 'ucAnswer' },
+    redirect: { name: 'ucSet' },
     // 用户中心
     component: () => import('../views/userCenter/userCenter.vue'),
     children: [

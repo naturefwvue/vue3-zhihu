@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import Navi from '@/components/web/navi.vue'
+import Navi from './components/web/navi.vue'
 import { useRouter } from 'vue-router'
 
 export default {
@@ -58,19 +58,17 @@ export default {
     */
 
     router.beforeEach((to, from, next) => {
-      // 可以验证是否需要登录等
-      // alert(to.meta.requiresAuth)
-      // alert(to.fullPath)
+      console.log('————————开始——————————')
+      console.log('全局检测——beforeEach')
 
       // 验证404
       if (to.matched.length === 0) {
         next({ path: '/404' })
+        return
       }
 
       // 验证是否需要登录
       if (to.matched.some(record => record.meta.requiresAuth)) {
-        // this route requires auth, check if logged in
-        // if not, redirect to login page.
         if (!window.__isUserOnline) {
           next({
             path: '/login',
@@ -82,9 +80,7 @@ export default {
       } else {
         next() // 确保一定要调用 next()
       }
-
-      console.log('全局检测——beforeEach')
-      next()
+      // next()
     })
 
     router.afterEach((to, from) => {
@@ -110,7 +106,12 @@ export default {
       // path = to.fullPath
       console.log('全局检测——afterEach')
       console.log(to)
-      console.log('——————————————————')
+      console.log('————————结束——————————')
+    })
+
+    router.beforeResolve((to, from, next) => {
+      console.log('全局检测——beforeResolve')
+      next()
     })
 
     return {
