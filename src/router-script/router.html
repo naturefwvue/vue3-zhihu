@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>vue3 + router 4 -- 础功能版</title>
+    <script src="https://unpkg.com/vue@next"></script>
+    <script src="https://unpkg.com/vue-router@next"></script>
+  </head>
+  <body>
+    <div id="app">
+      <h1>Hello App!</h1>
+      <p>
+        <h2>{{value}}</h2>
+        <!-- 使用 router-link 组件来导航. -->
+        <!-- 通过传入 `to` 属性指定链接. -->
+        <!-- <router-link> 默认会被渲染成一个 `<a>` 标签 -->
+        <router-link to="/foo">Go to Foo</router-link>&nbsp;&nbsp;&nbsp;
+        <router-link to="/bar">Go to Bar</router-link>
+      </p>
+      <!-- 路由出口 -->
+      <!-- 路由匹配到的组件将渲染在这里 -->
+      <router-view></router-view>
+    </div>
+
+  <script type="text/javascript">
+    // 0. 如果使用模块化机制编程，导入Vue和VueRouter
+
+    // 1. 定义 (路由) 组件。
+    // 可以从其他文件 import 进来
+    const Foo = { template: '<div>foo</div>' }
+    const Bar = { template: '<div>bar</div>' }
+
+    // 2. 定义路由
+    const routes = [
+      { path: '/foo', component: Foo },
+      { path: '/bar', component: Bar }
+    ]
+
+    const history = VueRouter.createWebHistory()
+    // 3. 创建 router 实例
+    const router = VueRouter.createRouter({
+      history,
+      routes
+    })
+
+    // 路由测试
+    const routerTest = {
+      data() {
+        return {
+          value: '这是一个路由演示'
+        }
+      }
+    }
+    // 4. 创建和挂载根实例。
+    const vmRouter = Vue.createApp(routerTest).use(router).mount('#app')
+
+  </script>
+</body>
+</html>
