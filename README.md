@@ -21,17 +21,26 @@ $ npm install ant-design-vue --save
 
 # 路由demo
 
-## 路由尝试 /src/router-test 
+## script 的方式引入VueRouter
+* /src/router-script  
+直接采用script的方式引入js 文件的方式使用路由的demo。
+
+## 路由尝试
+* /src/router-test   
 里面是一些一开始的各种尝试。可以忽略，这里只是留个纪念
 
-## 用户中心的路由 /src/router-userCenter
+## 用户中心的路由 
+* /src/router-userCenter  
 使用用户中心的通用设置，验证路由的各种使用方式
  
 
-## 仿某乎的路由 /src/router-zhihu
-仿某乎的路由，仿制一套路由设置
+## 仿某乎的路由 
+* /src/router-zhihu  
+仿某乎的路由，仿制一套路由设置  
 
-视频演示：  
+* 路由设置讲解：
+https://gitbook.cn/books/5fbc63d2ba97546ed36c7fa6/index.html 
+
+* 视频演示：  
 基础路由 https://www.zhihu.com/zvideo/1314326340745904128  
-
 动态添加路由：https://www.zhihu.com/zvideo/1314336090048843776 
