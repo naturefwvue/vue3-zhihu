@@ -26,11 +26,12 @@ $ npm install ant-design-vue --save
 
 ## 用户中心的路由 /src/router-userCenter
 使用用户中心的通用设置，验证路由的各种使用方式
-
-视频演示：
+ 
 
 ## 仿某乎的路由 /src/router-zhihu
 仿某乎的路由，仿制一套路由设置
 
-视频演示：https://www.zhihu.com/zvideo/1314326340745904128 
+视频演示：  
+基础路由 https://www.zhihu.com/zvideo/1314326340745904128  
 
+动态添加路由：https://www.zhihu.com/zvideo/1314336090048843776 
