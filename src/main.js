@@ -8,13 +8,18 @@ import 'ant-design-vue/dist/antd.css'
 // import store from './router-test/store'
 
 // 用户中心的路由演示
-import App from './router-userCenter/App.vue'
-import router from './router-userCenter/router'
-import store from './router-userCenter/store'
+// import App from './router-userCenter/App.vue'
+// import router from './router-userCenter/router'
+// import store from './router-userCenter/store'
 
 // 仿某乎的路由演示
 // import App from './router-zhihu/App.vue'
 // import router from './router-zhihu/router'
 // import store from './router-zhihu/store'
+
+// 用户中心的路由演示
+import App from './vuex-test/App.vue'
+import router from './vuex-test/router'
+import store from './vuex-test/store'
 
 createApp(App).use(Antd).use(store).use(router).mount('#app')
