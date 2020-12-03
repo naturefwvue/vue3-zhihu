@@ -2,6 +2,8 @@
 <template>
   <div id="nav" style="margin:0px auto;width:1050px;">
     <router-link to="/">首页</router-link> |
+    <router-link :to="{name:'websql'}">websql</router-link> |
+    <router-link :to="{name:'indexDB'}">indexDB</router-link> |
   </div>
 </template>
 
