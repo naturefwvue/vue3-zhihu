@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>bbs-简单介绍一下vue3.0</title>
+    <title>个人博客-简单介绍一下vue3.0的 Composition API</title>
     <script src="https://unpkg.com/vue@next"></script>
     <!-- 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-plus/lib/theme-chalk/index.css">
@@ -13,15 +13,7 @@
     <script src="https://unpkg.com/element-plus/lib/index.full.js"></script>
   </head>
   <body>
-    <div id="group" style="float: right;">
-      查询：<input type="search" value="" placeholder="可以写查询条件"> <br>
-      <template v-for="(item,index) in groupList" :key="'group'+index">
-        <span @click="showBlogList({groupId:item.value})" style="cursor: pointer;">{{item.label}}</span><br>
-        {{item.introduction}}<hr>
-      </template>
-    </div>
- 
-    <div id="bbs">
+    <div id="blog">
       <!--导航-->
       <el-menu
         default-active="1"
@@ -33,7 +25,7 @@
         @select="naviClick">
           <el-menu-item index="1">首页</el-menu-item>
           <el-menu-item index="2">写博客</el-menu-item>
-        </el-menu>
+      </el-menu>
       <div class="line"></div>
 
       <!--博文列表-->
@@ -48,9 +40,12 @@
             {{item.introduction}}<br>
             人气：{{item.viewCount}} 点赞：{{item.agreeCount}}<br>
       </el-card>
+
       <!--发博客-->
       <el-dialog title="发博客" v-model="isShowBlogForm">
-        标题：<el-input style="width: 300px;" v-model="blogForm.title" placeholder="请输入标题"></el-input><br>
+        标题：<el-input style="width: 300px;"
+                v-model="blogForm.title"
+                placeholder="请输入标题"></el-input><br>
         分组：<el-select v-model="blogForm.group" placeholder="请选择">
                 <el-option
                   v-for="item in groupList"
@@ -66,7 +61,7 @@
                   v-model="blogForm.introduction"></el-input><br>
         内容：<br><el-input
                 type="textarea"
-                :autosize="{ minRows: 2, maxRows: 4}"
+                :autosize="{ minRows: 10, maxRows: 40}"
                 placeholder="请输入内容"
                 v-model="blogForm.concent"></el-input><br>
         <template #footer>
@@ -78,35 +73,41 @@
       </el-dialog>
 
       <!--博文详细-->
-      <div v-show="isShowDiscuss" style="border:1px solid #db820d;margin: 5px;padding: 3px;" >
-        {{blog.title}}<br>
-        {{blog.addTime}}<br>
+      <el-card v-show="isShowDiscuss" style="margin: 22px;padding: 10px; ">
+        {{blog.title}} {{blog.addTime}}<br>
         <p v-html="blog.concent"></p>
-        {{blog.concent}}<br>
-        {{blog.viewCount}}<br>
-        {{blog.agreeCount}}<br>
-      </div>
+        人气：{{blog.viewCount}}- 点赞：{{blog.agreeCount}}<br>
+      </el-card>
       <hr>
       <!--讨论列表-->
-      <div v-show="isShowDiscuss" style="border:1px solid #db820d;margin: 5px;padding: 3px;"
-          v-for="(item,index) in discussList" :key="'discusslist'+index">
-        {{index+1}}楼：
-        {{item.discusser}} 在 {{item.addTime}} 说：<br>
+      <el-card class="box-card" v-show="isShowDiscuss" style="margin: 10px;padding: 5px; "
+          v-for="(item,index) in discussList"
+          :key="'discusslist'+index">
+        {{index+1}}楼：{{item.nick}} 在 {{item.addTime}} 说：
+        <el-divider></el-divider>
         <p v-html="item.concent"></p>
         点赞：{{item.agreeCount}}<br>
-      </div>
+      </el-card><br>
+
       <!--发讨论-->
-      <div v-show="isShowDiscuss" style="border:1px solid #db820d;margin: 5px;padding: 3px;" >
+      <el-card v-show="isShowDiscuss" style="margin: 22px;padding: 10px; " >
         发讨论<br>
-        昵称：<input v-model="discussForm.discusser" type="text"/> <br>
-        内容：<textarea v-model="discussForm.concent" cols="50" rows="5"></textarea> <br>
-        <input type="button" value="提交讨论" @click="submit">
-      </div>
+        昵称：<el-input style="width: 300px;"
+                v-model="discussForm.nick"
+                placeholder="请输入昵称"></el-input><br>
+        内容：<el-input
+                type="textarea"
+                :autosize="{ minRows: 4, maxRows: 10}"
+                placeholder="请输入内容："
+                v-model="discussForm.concent"></el-input> <br>
+        <el-button type="primary" @click="manageDiscuss.add(blog.id)">提交讨论</el-button>
+      </el-card>
 
     </div>
+
   <script type="text/javascript">
   // 博文分组表单
-  const groupForms =  Vue.reactive( 
+  const GroupForm =  Vue.reactive( 
      {
       value: '这是一个博文分组',
       title: '分组名称',
@@ -115,7 +116,7 @@
   )
 
   // 博文表单
-  const blogForms =  Vue.reactive( 
+  const BlogForm =  Vue.reactive( 
     {
       title: '这是一个博客',
       group: null,
@@ -125,17 +126,15 @@
   )
 
   // 讨论表单
-  const discussForms =  Vue.reactive( 
+  const DiscussForm =  Vue.reactive( 
     {
-      title: '这是一个博客',
-      group: 1,
-      introduction: '这是博客的简介',
-      concent: '这是博客的详细内容<br>第二行'
+      nick: 'jyk',
+      concent: '这是一个讨论'
     }
   )
 
   // 博文分组列表
-  const groupLists =  Vue.reactive(
+  const GroupList =  Vue.reactive(
     [
       {
         value:'1',
@@ -160,7 +159,7 @@
     ])
  
   // 博文列表
-  const blogLists =  Vue.reactive([
+  const BlogList =  Vue.reactive([
       {
         id: 1,
         title: '这是一个博客',
@@ -182,17 +181,17 @@
     ])
 
   // 讨论列表
-  const BlogDiscussList = Vue.reactive({
+  const DiscussList = Vue.reactive({
     b1: {
       discuessList:[
         {
-          discusser:'jyk',
+          nick:'jyk',
           addTime: '2020-10-15',
           concent: '这个博客写的不错<br>第二行',
           agreeCount: 1
         },
         { 
-          discusser:'jyk',
+          nick:'jyk',
           addTime: '2020-10-15',
           concent: '这也行？那我也能写<br>第二行',
           agreeCount: 1
@@ -202,13 +201,13 @@
     b2: {
       discuessList:[
         {
-          discusser:'jyk2',
+          nick:'jyk2',
           addTime: '2020-10-15',
           concent: '这个博客写的不错22<br>第二行',
           agreeCount: 1
         },
         { 
-          discusser:'jyk2',
+          nick:'jyk2',
           addTime: '2020-10-15',
           concent: '这也行？那我也能写22<br>第二行',
           agreeCount: 1
@@ -234,7 +233,7 @@
     // 获取博文
     const getBlogById = (id) => {
       
-      return blogLists.filter(item => item.id === id)[0]
+      return BlogList.filter(item => item.id === id)[0]
     }
 
     // 添加新博文
@@ -242,17 +241,18 @@
       const myDate = new Date()
       const newBlog = {
         id: myDate.getTime(), // 获取当前时间，毫秒，暂时表示ID
-        title: blogForms.title,
+        title: BlogForm.title,
         addTime: `${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`,
-        introduction: blogForms.introduction,
-        concent: blogForms.concent,
+        introduction: BlogForm.introduction,
+        concent: BlogForm.concent,
         viewCount: 1,
         agreeCount: 1
       }
-      blogLists.unshift(newBlog)
+      // 加博文
+      BlogList.unshift(newBlog)
 
       // 添加空讨论
-      BlogDiscussList['b'+newBlog.id] = {discuessList:[]}
+      DiscussList['b'+newBlog.id] = {discuessList:[]}
     }
 
     return {
@@ -264,18 +264,27 @@
   // 讨论的管理类
   const discussManage = () => {
     // 依据ID获取博文和讨论列表
-    const getBlogDiscessListById = (id) => {
-      return BlogDiscussList['b' + id].discuessList
+    const getDiscessListById = (id) => {
+      return DiscussList['b' + id].discuessList
     }
 
     // 添加新讨论
-    const add = () => {
-      
+    const add = (id) => {
+      const myDate = new Date()
+      const newDiscuss = {
+          nick: DiscussForm.nick,
+          addTime: `${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`,
+          concent: DiscussForm.concent,
+          agreeCount: 1
+      }
+      DiscussList['b' + id].discuessList.push(newDiscuss)
     }
+
+    
 
     return {
       add,
-      getBlogDiscessListById
+      getDiscessListById
     }
   }
 
@@ -283,13 +292,12 @@
   const vueBlog = {
     setup() {
       // 定义数据
-      const groupForm = groupForms // 分组表单
-      const blogForm = blogForms // 博文表单
-      const discussForm = discussForms // 讨论表单
+      const groupForm = GroupForm // 分组表单
+      const blogForm = BlogForm // 博文表单
+      const discussForm = DiscussForm // 讨论表单
       
-      const groupList = groupLists // 分组列表
-      const blogList = blogLists // 博文列表
-      const blogDiscussList = BlogDiscussList // 博文+讨论列表
+      const groupList = GroupList // 分组列表
+      const blogList = BlogList // 博文列表
       
       const blog = Vue.ref({}) // 博文
       const discussList = Vue.ref({}) // 讨论列表
@@ -319,7 +327,7 @@
         isShowDiscuss.value = true
         console.log('blog:',manageBlog.getBlogById(id))
         blog.value = manageBlog.getBlogById(id)
-        discussList.value =  manageDiscuss.getBlogDiscessListById(id)
+        discussList.value =  manageDiscuss.getDiscessListById(id)
       }
       
       // 导航事件
@@ -346,7 +354,6 @@
         discussForm,
         groupList, // 列表
         blogList,
-        blogDiscussList,
         blog,
         discussList,
         isShowBlogForm, // 显示状态
@@ -359,9 +366,8 @@
       }
     }
   }
-  const vmBlog = Vue.createApp(vueBlog).use(ElementPlus).mount('#bbs')
+  const vmBlog = Vue.createApp(vueBlog).use(ElementPlus).mount('#blog')
  
   </script>
 </body>
 </html>
-

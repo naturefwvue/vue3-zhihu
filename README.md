@@ -44,3 +44,11 @@ https://gitbook.cn/books/5fbc63d2ba97546ed36c7fa6/index.html
 * 视频演示：  
 基础路由 https://www.zhihu.com/zvideo/1314326340745904128  
 动态添加路由：https://www.zhihu.com/zvideo/1314336090048843776 
+
+# CND的dmeo
+
+## 个人博客
+Vue 3.0 入门之实战篇，先写个博客练练手
+https://gitbook.cn/gitchat/activity/5f7fd08d86b3d00f37ea4c5e 
+
+ 

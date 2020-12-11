@@ -1,0 +1,489 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>个人博客-Composition API-进阶版</title>
+    <script src="https://unpkg.com/vue@next"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-plus/lib/index.full.js"></script>
+  </head>
+  <body>
+    <div id="blog">{{manageBlog}}
+      <!--导航-->
+      <el-menu
+        default-active="1"
+        class="el-menu-demo"
+        mode="horizontal"
+        background-color="#545c64"
+        text-color="#fff"
+        active-text-color="#ffd04b"
+        @select="naviClick">
+          <el-menu-item index="1">首页</el-menu-item>
+          <el-menu-item index="2">写博客</el-menu-item>
+      </el-menu>
+      <div class="line"></div>
+      
+      <!--博文分组和查询-->
+      <div id="group" style="float: right;">
+        查询：<input type="search" value="" placeholder="可以写查询条件"> <br>
+        <template v-for="(item,index) in list.group" :key="'group'+index">
+          <span @click="findBlog({group:item.value})" style="cursor: pointer;">{{item.label}}</span><br>
+          {{item.introduction}}<hr>
+        </template>
+      </div>
+
+      <!--博文列表-->
+      <el-card class="box-card" v-show="!isShowDiscuss"
+          v-for="(item,index) in blogList"
+          :key="'bloglist'+index" 
+          style="width:500px;margin: 5px;padding: 3px;" 
+          >
+            {{item.id}}-<span @click="showBlog(item.id)" style="cursor: pointer;">{{item.title}}</span>
+            {{item.addTime}}
+            <el-divider></el-divider>
+            {{item.introduction}}<br>
+            人气：{{item.viewCount}} <span @click="manageBlog.agreeCountAdd(item.id)">点赞：{{item.agreeCount}}</span><br>
+      </el-card>
+
+      <!--发博客-->
+      <el-dialog title="发博客" v-model="isShowBlogForm">
+        标题：<el-input style="width: 300px;"
+                v-model="form.blog.title"
+                placeholder="请输入标题"></el-input><br>
+        分组：<el-select v-model="form.blog.group" placeholder="请选择">
+                <el-option
+                  v-for="item in groupList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select><br>
+        简介：<br><el-input
+                  type="textarea"
+                  :autosize="{ minRows: 2, maxRows: 4}"
+                  placeholder="请输入简介"
+                  v-model="form.blog.introduction"></el-input><br>
+        内容：<br><el-input
+                type="textarea"
+                :autosize="{ minRows: 10, maxRows: 40}"
+                placeholder="请输入内容"
+                v-model="form.blog.concent"></el-input><br>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="isShowBlogForm = false">取 消</el-button>
+            <el-button v-if="updateBlogId === 0" type="primary" @click="manageBlog.add">确 定</el-button>
+            <el-button v-if="updateBlogId !== 0" type="primary" @click="manageBlog.update(updateBlogId)">确 定</el-button>
+          </span>
+        </template>
+      </el-dialog>
+
+      <!--博文详细-->
+      <el-card v-show="isShowDiscuss" style="margin: 22px;padding: 10px; ">
+        {{blogInfo.title}} {{blogInfo.addTime}}<br>
+        <p v-html="blogInfo.concent"></p>
+        人气：{{blogInfo.viewCount}} | 
+        <span @click="manageBlog.agreeCountAdd(blogInfo.id)">
+          点赞：{{blogInfo.agreeCount}}
+        </span> | 
+        <span @click="beforeUpdateBlog(blogInfo.id)">
+          修改博文
+        </span> | 
+        <br>
+      </el-card>
+      <hr>
+      <!--讨论列表-->
+      <el-card class="box-card" v-show="isShowDiscuss" style="margin: 10px;padding: 5px; "
+          v-for="(item,index) in discussList"
+          :key="'discusslist'+index">
+        {{index+1}}楼：{{item.nick}} 在 {{item.addTime}} 说：
+        <el-divider></el-divider>
+        <p v-html="item.concent"></p>
+        点赞：{{item.agreeCount}} 
+        <span @click="delDiscuss(blogInfo.id,item.id)">删除</span>
+        <br>
+      </el-card><br>
+
+      <!--发讨论-->
+      <el-card v-show="isShowDiscuss" style="margin: 22px;padding: 10px; " >
+        发讨论<br>
+        昵称：<el-input style="width: 300px;"
+                v-model="form.discuss.nick"
+                placeholder="请输入昵称"></el-input><br>
+        内容：<el-input
+                type="textarea"
+                :autosize="{ minRows: 4, maxRows: 10}"
+                placeholder="请输入内容："
+                v-model="form.discuss.concent"></el-input> <br>
+        <el-button type="primary" @click="manageDiscuss.add(blogInfo.id)">提交讨论</el-button>
+      </el-card>
+
+    </div>
+
+  <script type="text/javascript">
+  // 博文分组表单
+  const GroupForm =  Vue.reactive( 
+    {
+      value: '这是一个博文分组',
+      title: '分组名称',
+      introduction: '这是博文分组的简介'
+    }
+  )
+
+  // 博文表单
+  const BlogForm =  Vue.reactive( 
+    {
+      title: '这是一个博客',
+      group: null,
+      introduction: '这是博客的简介',
+      concent: '这是博客的详细内容<br>第二行'
+    }
+  )
+
+  // 讨论表单
+  const DiscussForm =  Vue.reactive( 
+    {
+      nick: 'jyk',
+      concent: '这是一个讨论'
+    }
+  )
+
+  // 博文分组列表
+  const GroupList =  Vue.reactive(
+    [
+      {
+        value:'1',
+        label:'Vue',
+        introduction: 'Vue'
+      },
+      {
+        value:'2',
+        label:'React',
+        introduction: 'React'
+      },
+      {
+        value:'3',
+        label:'Angular',
+        introduction: 'Angular'
+      },
+      {
+        value:'4',
+        label:'Node',
+        introduction: 'Node'
+      }
+    ])
+ 
+  // 博文列表
+  const BlogList =  Vue.reactive([
+      {
+        id: 1,
+        title: '这是一个博客1',
+        group: 1,
+        addTime: '2020-10-15',
+        introduction: '这是博客简介1',
+        concent: '这是博客的详细内容<br>第二行1',
+        viewCount: 1,
+        agreeCount: 1
+      },
+      {
+        id: 2,
+        title: '这是第二个博客2',
+        group: 2,
+        addTime: '2020-10-16',
+        introduction: '这还是博客的简介2',
+        concent: '这是博客的详细内容<br>第二行2',
+        viewCount: 1,
+        agreeCount: 1
+      }
+    ])
+
+  // 讨论列表
+  const DiscussList = Vue.reactive({
+    b1: {
+      discuessList:[
+        {
+          id:1,
+          nick:'jyk',
+          addTime: '2020-10-15',
+          concent: '这个博客写的不错<br>第二行',
+          agreeCount: 1
+        },
+        { 
+          id:2,
+          nick:'jyk',
+          addTime: '2020-10-15',
+          concent: '这也行？那我也能写<br>第二行',
+          agreeCount: 1
+        }
+      ]
+    },
+    b2: {
+      discuessList:[
+        {
+          id:1,
+          nick:'jyk2',
+          addTime: '2020-10-15',
+          concent: '这个博客写的不错22<br>第二行',
+          agreeCount: 1
+        },
+        { 
+          id:2,
+          nick:'jyk2',
+          addTime: '2020-10-15',
+          concent: '这也行？那我也能写22<br>第二行',
+          agreeCount: 1
+        }
+      ]
+    }
+  })
+
+  // 博文分组的管理类
+  const groupManage = () => {
+    // 添加新分组
+    const add = () => {
+    
+    }
+
+    return {
+      add
+    }
+  }
+
+  // 博文的管理类
+  const blogManage = () => {
+    // 通过ID获取博文
+    const getBlogById = (id) => {
+      return BlogList.filter(item => item.id === id)[0]
+    }
+    
+    // 通过分组获取博文列表
+    const getBlogListByGroup = (group) => {
+      return BlogList.filter(item => item.group == group)
+    }
+
+    // 通过查询关键字获取博文列表
+    const getBlogListByKey = (key) => {
+      let list = BlogList.filter(item => item.title.indexOf(key) >0 )
+      return list
+    }
+
+    // 点赞
+    const agreeCountAdd = (id) => {
+      BlogList.filter(item => item.id === id)[0].agreeCount += 1
+
+    }
+    
+    // 添加新博文
+    const add = () => {
+      const myDate = new Date()
+      const newBlog = {
+        id: myDate.getTime(), // 获取当前时间，毫秒，暂时表示ID
+        title: BlogForm.title,
+        group: BlogForm.group,
+        addTime: `${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`,
+        introduction: BlogForm.introduction,
+        concent: BlogForm.concent,
+        viewCount: 0,
+        agreeCount: 0
+      }
+      // 加博文
+      BlogList.unshift(newBlog)
+
+      // 添加空讨论
+      DiscussList['b'+newBlog.id] = {discuessList:[]}
+    }
+
+    // 准备修改博文
+    const beforeUpdate = (id) => {
+      const blog = BlogList.filter(item => item.id === id)[0]
+      blogForm.title = blog.title
+      blogForm.group = blog.group
+      blogForm.introduction = blog.introduction
+      blogForm.concent = blog.concent
+    }
+    
+    // 修改博文
+    const update = (id) => {
+      const blog = BlogList.filter(item => item.id === id)[0]
+      blog.title =  BlogForm.title
+      blog.group =  BlogForm.group
+      blog.introduction =  BlogForm.introduction
+      blog.concent =  BlogForm.concent
+    }
+
+    // 删除博文
+    const del = (id) => {
+      BlogList = BlogList.filter(item => item.id !== id)
+    }
+
+    return {
+      getBlogById,
+      getBlogListByGroup,
+      getBlogListByKey,
+      add,
+      beforeUpdate,
+      update,
+      del,
+      agreeCountAdd
+    }
+  }
+
+  // 讨论的管理类
+  const discussManage = () => {
+    // 依据ID获取博文和讨论列表
+    const getDiscessListById = (id) => {
+      return DiscussList['b' + id].discuessList
+    }
+
+    // 添加新讨论
+    const add = (id) => {
+      const myDate = new Date()
+      const newDiscuss = {
+        id: myDate.getTime(), // 获取当前时间，毫秒，暂时表示ID
+        nick: DiscussForm.nick,
+        addTime: `${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`,
+        concent: DiscussForm.concent,
+        agreeCount: 0
+      }
+      DiscussList['b' + id].discuessList.push(newDiscuss)
+    }
+
+    // 删除讨论
+    const del = (blogId,discussId) => {
+      console.log(blogId)
+      console.log(DiscussList['b' + blogId].discuessList)
+      DiscussList['b' + blogId].discuessList = DiscussList['b' + blogId].discuessList.filter(item => item.id !== discussId)
+    }
+
+    return {
+      getDiscessListById,
+      add,
+      del
+    }
+  }
+
+  // vue
+  const vueBlog = {
+    setup() {
+      // 定义数据
+      const groupForm = GroupForm // 分组表单
+      const blogForm = BlogForm // 博文表单
+      const discussForm = DiscussForm // 讨论表单
+      
+      const groupList = GroupList // 分组列表
+      const blogList = Vue.ref({}) // 博文列表
+      blogList.value = BlogList.filter(item => item.id > 0 )
+      
+      const blogInfo = Vue.ref({}) // 博文
+      const discussList = Vue.ref({}) // 讨论列表
+      const updateBlogId = Vue.ref(0) // 要修改的博文ID
+     
+      // 定义管理类
+      const manageBlog = blogManage()
+      const manageDiscuss = discussManage()
+      
+      // 定义状态标志
+      // 是否显示添加博文表单
+      const isShowBlogForm = Vue.ref(false)
+      // 是否显示添加博文 + 讨论
+      const isShowDiscuss = Vue.ref(false)
+
+      // 定义事件
+      // 博文的查询
+      const findBlog = (query) => {
+        console.log(query)
+        if (query.group) {
+          console.log(BlogList)
+          blogList.value = manageBlog.getBlogListByGroup(query.group)
+          console.log(blogList.value)
+        }
+        updateBlogId.value = 0
+      }
+
+      // 博文表单的显示与隐藏
+      const showBlogForm = (isShow) => {
+        isShowBlogForm.value = isShow
+      }
+
+      // 博文详细+讨论列表的显示与隐藏
+      const showDiscuss = (isShow) => {
+        isShowDiscuss.value = isShow
+        isShowBlogForm.value = false
+      }
+
+      // 显示博文和讨论的事件
+      const showBlog = (id) => {
+        isShowDiscuss.value = true
+        blogInfo.value = manageBlog.getBlogById(id)
+        discussList.value =  manageDiscuss.getDiscessListById(id)
+      }
+
+      // 准备修改博文
+      const beforeUpdateBlog = (id) => {
+        isShowBlogForm.value = true
+        updateBlogId.value = id
+        manageBlog.beforeUpdate(id)
+      }
+       
+      // 删除讨论
+      const delDiscuss = (blogId,discussId) => {
+        manageDiscuss.del(blogId,discussId)
+        discussList.value =  manageDiscuss.getDiscessListById(blogId)
+      }
+      
+      // 导航事件
+      const naviClick = (key, keyPath) => {
+        console.log(key, keyPath)
+        switch (key) {
+          case '1':
+            // 首页
+            isShowBlogForm.value = false
+            isShowDiscuss.value = false
+            break;
+          case '2':
+            // 写博客
+            updateBlogId.value = 0
+            isShowBlogForm.value = true
+            isShowDiscuss.value = false
+            break;
+            
+        }
+      }
+
+      return {
+        form: { // 表单
+          group: groupForm,
+          blog: blogForm,
+          discuss: discussForm
+        },
+        list: { // 列表
+          group: groupList, 
+          blog: blogList,
+          discuss: discussList,
+        },
+        blogList,
+        discussList,
+        blogInfo,
+        updateBlogId,
+        isShowBlogForm, // 显示状态
+        isShowDiscuss,
+        showBlogForm, // 事件
+        findBlog, // 查询
+        showBlog, // 显示博文
+        beforeUpdateBlog, // 准备修改博文
+        delDiscuss,
+        naviClick,
+        manageBlog,
+        manageDiscuss
+      }
+    }
+  }
+  const vmBlog = Vue.createApp(vueBlog).use(ElementPlus).mount('#blog')
+ 
+  </script>
+</body>
+</html>
