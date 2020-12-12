@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>vue3 composition API的测试</title>
+    <script src="js/vue.global.js"></script>
+    <script src="js/vue-router.global.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <h1>Hello App!</h1>
+      <p>ref演示</p>
+      <p>ref 数字变对象
+        <input type="button" @click="refClick.ref_1" value="+1"></input> &nbsp; 
+        <input type="button" @click="refClick.ref_2" value="+属性"></input> &nbsp; 
+        <input type="button" @click="refClick.ref_3" value="变成对象"></input> &nbsp; 
+        
+      </p>
+      <p>ref 值：{{ref}}</p>
+      <p>refs.ref 值：{{refs.ref}}</p>
+      <p>refs.ref 值：{{refs.ref._value}}</p>
+      <p>refs.ref 属性_name：{{refs}}</p>
+      <hr>
+      <p>ref 数组
+        <input type="button" @click="refClick.ref_11" value="push"></input> &nbsp; 
+        <input type="button" @click="refClick.ref_12" value="filter"></input> &nbsp; 
+      </p>
+      <p>refs.refArror 值：{{refs.refArror}}</p>
+      <p>refs.refArror_value 值：{{refs.refArror._value}}</p>
+      <p>refs.refArror：
+        <template v-for="item in refs.refArror" :key="item">
+          {{item}}  
+        </template>
+      </p>
+      <hr>
+      <hr>
+      
+      <p>rets.reactive 演示</p>
+      <p>rets.reactive 数字变对象
+        <input type="button" @click="retClick.reactive_1" value="+1"></input> &nbsp; 
+        <input type="button" @click="retClick.reactive_2" value="+属性"></input> &nbsp; 
+        <input type="button" @click="retClick.reactive_3" value="变成对象"></input> &nbsp; 
+        
+      </p>
+      <p>rets.reactive 值：{{rets.reactive}}</p>
+      <p>rets.reactive 属性_name：{{rets.reactive.name}}</p>
+      <hr>
+      
+      <p>reactive 数组
+        <input type="button" @click="retClick.reactive_11" value="push"></input> &nbsp; 
+        <input type="button" @click="retClick.reactive_12" value="filter"></input> &nbsp; 
+        
+      </p>
+      <p>rets.reactive 值：{{rets.reactiveArror}}</p>
+      <p>rets.reactive
+        <template v-for="item in reactiveArror" :key="item">
+          {{item}}  
+        </template>
+      </p>
+      <hr>
+      
+      <p>reactive 对象
+        <input type="button" @click="retClick.reactive_21" value="push"></input> &nbsp; 
+        <input type="button" @click="retClick.reactive_22" value="filter"></input> &nbsp; 
+        <input type="button" @click="retClick.reactive_23" value="变成对象"></input> &nbsp; 
+        
+      </p>
+      <p>rets.reactiveObject 值：{{rets.reactiveObject}}</p>
+      <p>rets.reactiveObject
+        <template v-for="(item,key,index) in rets.reactiveObject" :key="index">
+          <br>{{index}}-{{key}}-{{item}}  
+        </template>
+      </p>
+      <hr>
+        
+    </div>
+
+  <script type="text/javascript">
+    const vueComposition = {
+      setup() {
+        const value = Vue.ref('11')
+        // ref的演示 
+        const ref = Vue.ref(1)
+        const ref_1 = () => {
+          ref.value += 1
+          console.log('ref_1:',ref)
+        }
+
+        const ref_2 = () => {
+          ref.value.name = 'newName'
+          console.log('ref_2:',ref)
+        }
+
+        const ref_3 = () => {
+          ref.value = {title:'newName'}
+          console.log('ref_3:',ref)
+        }
+        
+        // ref的数组演示
+        const refArror = Vue.ref([1])
+        const ref_11 = () => {
+          refArror.value.push(2)
+          console.log('ref_11_push:',refArror)
+        }
+
+        const ref_12 = () => {
+          refArror.value = refArror.value.filter(item => item === 2)
+          console.log('ref_11_filter:',refArror)
+        }
+    
+        // reacte的演示 
+        let reactive = Vue.reactive(1)
+        console.log('reactive:',reactive)
+        const reactive_1 = () => {
+          reactive += 1
+          console.log('reactive_1:',reactive)
+        }
+
+        const reactive_2 = () => {
+          reactive.name = 'newName'
+          console.log('reactive_2:',reactive)
+        }
+
+        const reactive_3 = () => {
+          reactive = {title:'newName'}
+          console.log('reactive_3:',reactive)
+        }
+
+        // reactive 的数组演示
+        const reactiveArror = Vue.reactive([1])
+        console.log('reactiveArror:',reactiveArror)
+        const reactive_11 = () => {
+          reactiveArror.push(2)
+          console.log('reactive_11_push:',reactiveArror)
+        }
+
+        const reactive_12 = () => {
+          reactiveArror = reactiveArror.filter(item => item === 2)
+          console.log('reactive_12_filter:',reactiveArror)
+        }
+
+        // reactive 的对象 测试
+        let reactiveObject = Vue.reactive({title:'title'})
+        console.log('reactiveObject:',reactiveObject)
+        const reactive_21 = () => {
+          reactiveObject.name = 'newName'
+          console.log('reactive_21:',reactiveObject)
+        }
+
+        const reactive_22 = () => {
+          reactiveObject = {newTitle:'newTitle'}
+          console.log('reactive_22:',reactiveObject)
+        }
+
+        // reactive 的 return 测试
+        const reactiveRetrun = Vue.reactive({re:'re'})
+        console.log('reactiveRetrun:',reactiveRetrun)
+        const reactive_31 = () => {
+          reactiveRetrun.re = 'rerere'
+          console.log('reactive_31:',reactiveRetrun)
+        }
+
+        // ref 的 return 测试
+        const refRetrun = Vue.ref({re:'re'})
+        console.log('refRetrun:',refRetrun)
+        const ref_41 = () => {
+          refRetrun.value.re = 'rerere'
+          refRetrun.value.re2 = 'rerere222'
+          console.log('ref_41:',refRetrun)
+        }
+
+        return {
+          ref,
+          refs:{
+            ref, // 
+            refArror, // 
+            refRetrun, // 
+          },
+          refClick:{
+            ref_1, // +1
+            ref_2, // 属性
+            ref_3, // 变成对象
+            ref_11, // push
+            ref_12 // filter
+          },
+          rets:{
+            reactive, // 
+            reactiveArror, // 
+            reactiveObject, // 
+            reactiveRetrun // 
+          },
+          retClick:{
+            reactive_1, // +1
+            reactive_2, // 属性
+            reactive_3, // 变成对象
+            reactive_11, // push
+            reactive_12, // filter
+            reactive_21, // 
+            reactive_22, // 
+            reactive_31, // 
+          },
+          ref_41,
+          value
+        }
+      }
+    }
+    const vmBlog = Vue.createApp(vueComposition).mount('#app')
+ 
+  </script>
+</body>
+</html>
