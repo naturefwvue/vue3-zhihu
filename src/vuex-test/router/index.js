@@ -16,6 +16,16 @@ const routes = [
     path: '/indexDB',
     name: 'indexDB',
     component: () => import('../views/indexDB.vue')
+  },
+  {
+    path: '/localStorage',
+    name: 'localStorage',
+    component: () => import('../views/localStorage.vue')
+  },
+  {
+    path: '/sessionStorage',
+    name: 'sessionStorage',
+    component: () => import('../views/sessionStorage.vue')
   }
 ]
 

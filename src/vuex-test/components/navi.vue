@@ -4,6 +4,8 @@
     <router-link to="/">首页</router-link> |
     <router-link :to="{name:'websql'}">websql</router-link> |
     <router-link :to="{name:'indexDB'}">indexDB</router-link> |
+    <router-link :to="{name:'localStorage'}">localStorage</router-link> |
+    <router-link :to="{name:'sessionStorage'}">sessionStorage</router-link> |
   </div>
 </template>
 
