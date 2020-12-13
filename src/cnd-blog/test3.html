@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>vue3 composition API的生命周期的钩子</title>
+    <script src="js/vue.global.js"></script>
+    <script src="js/vue-router.global.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <h1>Hello App!</h1>
+      <p>ref演示</p>
+       
+      <p>ref 值：{{ref}}</p>
+      
+       
+    </div>
+
+  <script type="text/javascript">
+    const vueComposition = {
+      setup() {
+        const value = Vue.ref('11')
+        const show = (msg) => {
+          console.log(msg)
+        }
+        console.log(Vue)
+        Vue.onBeforeMount(() => {
+          console.log('onBeforeMount')
+        }) // 
+        Vue.onMounted(() => {
+          console.log('onMounted')
+        }) // 
+        
+        Vue.onBeforeUnmount(() => {
+          console.log('onBeforeUnmount')
+        }) // 
+        Vue.onUnmounted(() => { // 加载？
+          console.log('onUnmounted')
+        }) // 
+       
+        Vue.onDeactivated(() => {  // 关闭、未激活？
+          console.log('onDeactivated')
+        }) // 
+        Vue.onActivated(() => { // 启动时、激活
+          console.log('onActivated')
+        }) // 
+       
+        Vue.onBeforeUpdate(() => {
+          console.log('onBeforeUpdate')
+        }) // 
+        Vue.onUpdated(() => {
+          console.log('onUpdated')
+        }) // 
+        
+        Vue.onErrorCaptured(() => { // 捕获错误时
+          console.log('onErrorCaptured')
+        }) //  
+        Vue.onRenderTracked(() => { // 渲染跟踪时
+          console.log('onRenderTracked')
+        }) // 
+        Vue.onRenderTriggered(() => { // 渲染触发时
+          console.log('onRenderTriggered')
+        }) // 
+       
+
+        // onActivated onBeforeMount  onBeforeUnmount onBeforeUpdate onDeactivated 
+        // onErrorCaptured onRenderTracked onRenderTriggered onUnmounted
+        // onUpdated 
+        return {
+          value
+        }
+      }
+    }
+    const vmBlog = Vue.createApp(vueComposition).mount('#app')
+ 
+  </script>
+</body>
+</html>
