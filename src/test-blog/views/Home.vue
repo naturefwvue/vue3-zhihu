@@ -5,78 +5,48 @@
     {{blogs}}<br>
     <input type="button" value="添加" @click="addNewBlog(1)"/>
   </div>
+  <div>
+    <!--博文查询-->
+    <groups/>
+  </div>
+  <div>
+    <!--博文列表-->11
+    <blogs :blogList="blogList"/>
+  </div>
+  <div>
+    <!--博文表单-->
+  </div>
+  <div>
+    <!--讨论列表-->
+  </div>
+  <div>
+    <!--讨论表单-->
+  </div>
+
 </template>
 
 <script>
 // @ is an alias to /src
-import {
-  ref,
-  onBeforeMount,
-  onMounted,
-  onBeforeUnmount,
-  onUnmounted,
-  onDeactivated,
-  onActivated,
-  onBeforeUpdate,
-  onUpdated,
-  onErrorCaptured,
-  onRenderTracked,
-  onRenderTriggered
-} from 'vue'
+import { ref } from 'vue'
+import blogs from '../components/blog-list.vue'
+import groups from '../components/blog-find.vue'
 
-import { Blogs } from './js/blog.js'
+import { BlogNanage } from './js/blog.js'
 
 export default {
   name: 'Home',
   components: {
+    blogs,
+    groups
   },
   setup () {
-    const { blogs, addNewBlog } = Blogs()
+    const { getBlogList, addNewBlog } = BlogNanage()
 
+    const blogList = ref(getBlogList())
+    console.log(blogList)
     const value = ref('11')
-    onBeforeMount(() => {
-      console.log('onBeforeMount')
-    }) //
-    onMounted(() => {
-      console.log('onMounted')
-    }) //
-
-    onBeforeUnmount(() => {
-      console.log('onBeforeUnmount')
-    }) //
-    onUnmounted(() => { // 加载？
-      console.log('onUnmounted')
-    }) //
-
-    onDeactivated(() => { // 关闭、未激活？
-      console.log('onDeactivated')
-    }) //
-    onActivated(() => { // 启动时、激活
-      console.log('onActivated')
-    }) //
-
-    onBeforeUpdate(() => {
-      console.log('onBeforeUpdate')
-    }) //
-    onUpdated(() => {
-      console.log('onUpdated')
-    }) //
-
-    onErrorCaptured(() => { // 捕获错误时
-      console.log('onErrorCaptured')
-    }) //
-    onRenderTracked(() => { // 渲染跟踪时
-      console.log('onRenderTracked')
-    }) //
-    onRenderTriggered(() => { // 渲染触发时
-      console.log('onRenderTriggered')
-    }) //
-
-    // onActivated onBeforeMount  onBeforeUnmount onBeforeUpdate onDeactivated
-    // onErrorCaptured onRenderTracked onRenderTriggered onUnmounted
-    // onUpdated
     return {
-      blogs,
+      blogList,
       addNewBlog,
       value
     }

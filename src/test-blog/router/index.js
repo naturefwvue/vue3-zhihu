@@ -6,16 +6,6 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home
-  },
-  {
-    path: '/websql',
-    name: 'websql',
-    component: () => import('../views/websql.vue')
-  },
-  {
-    path: '/indexDB',
-    name: 'indexDB',
-    component: () => import('../views/indexDB.vue')
   }
 ]
 

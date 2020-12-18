@@ -18,13 +18,13 @@ import 'ant-design-vue/dist/antd.css'
 // import store from './router-zhihu/store'
 
 // Vuex的初探
-import App from './vuex-test/App.vue'
-import router from './vuex-test/router'
-import store from './vuex-test/store'
+// import App from './vuex-test/App.vue'
+// import router from './vuex-test/router'
+// import store from './vuex-test/store'
 
 // Composition API 的初探
-// import App from './test-blog/App.vue'
-// import router from './test-blog/router'
-// import store from './test-blog/store'
+import App from './test-blog/App.vue'
+import router from './test-blog/router'
+import store from './test-blog/store'
 
 createApp(App).use(Antd).use(store).use(router).mount('#app')
