@@ -34,7 +34,7 @@
           :key="'bloglist'+index" 
           style="width:500px;margin: 5px;padding: 3px;" 
           >
-            <span @click="blogClick(item.id)" style="cursor: pointer;">{{item.title}}</span>
+            <span @click="showBlog(item.id)" style="cursor: pointer;">{{item.title}}</span>
             {{item.addTime}}
             <el-divider></el-divider>
             {{item.introduction}}<br>
@@ -46,14 +46,6 @@
         标题：<el-input style="width: 300px;"
                 v-model="blogForm.title"
                 placeholder="请输入标题"></el-input><br>
-        分组：<el-select v-model="blogForm.group" placeholder="请选择">
-                <el-option
-                  v-for="item in groupList"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select><br>
         简介：<br><el-input
                   type="textarea"
                   :autosize="{ minRows: 2, maxRows: 4}"
@@ -106,60 +98,25 @@
     </div>
 
   <script type="text/javascript">
-  // 博文分组表单
-  const GroupForm =  Vue.reactive( 
-     {
-      value: '这是一个博文分组',
-      title: '分组名称',
-      introduction: '这是博文分组的简介'
-    }
-  )
-
   // 博文表单
-  const BlogForm =  Vue.reactive( 
+  const blogForm =  Vue.reactive( 
     {
       title: '这是一个博客',
-      group: null,
       introduction: '这是博客的简介',
       concent: '这是博客的详细内容<br>第二行'
     }
   )
 
   // 讨论表单
-  const DiscussForm =  Vue.reactive( 
+  const discussForm =  Vue.reactive( 
     {
       nick: 'jyk',
       concent: '这是一个讨论'
     }
   )
 
-  // 博文分组列表
-  const GroupList =  Vue.reactive(
-    [
-      {
-        value:'1',
-        label:'Vue',
-        introduction: 'Vue'
-      },
-      {
-        value:'2',
-        label:'React',
-        introduction: 'React'
-      },
-      {
-        value:'3',
-        label:'Angular',
-        introduction: 'Angular'
-      },
-      {
-        value:'4',
-        label:'Node',
-        introduction: 'Node'
-      }
-    ])
- 
   // 博文列表
-  const BlogList =  Vue.reactive([
+  const blogList =  Vue.reactive([
       {
         id: 1,
         title: '这是一个博客',
@@ -181,7 +138,7 @@
     ])
 
   // 讨论列表
-  const DiscussList = Vue.reactive({
+  const discussList = Vue.reactive({
     b1: {
       discuessList:[
         {
@@ -216,24 +173,11 @@
     }
   })
 
-  // 博文分组的管理类
-  const groupManage = () => {
-    // 添加新分组
-    const add = () => {
-    
-    }
-
-    return {
-      add
-    }
-  }
-
   // 博文的管理类
   const blogManage = () => {
     // 获取博文
     const getBlogById = (id) => {
-      
-      return BlogList.filter(item => item.id === id)[0]
+      return blogList.filter(item => item.id === id)[0]
     }
 
     // 添加新博文
@@ -241,18 +185,18 @@
       const myDate = new Date()
       const newBlog = {
         id: myDate.getTime(), // 获取当前时间，毫秒，暂时表示ID
-        title: BlogForm.title,
+        title: blogForm.title,
         addTime: `${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`,
-        introduction: BlogForm.introduction,
-        concent: BlogForm.concent,
+        introduction: blogForm.introduction,
+        concent: blogForm.concent,
         viewCount: 1,
         agreeCount: 1
       }
       // 加博文
-      BlogList.unshift(newBlog)
+      blogList.unshift(newBlog)
 
       // 添加空讨论
-      DiscussList['b'+newBlog.id] = {discuessList:[]}
+      discussList['b'+newBlog.id] = {discuessList:[]}
     }
 
     return {
@@ -263,21 +207,21 @@
 
   // 讨论的管理类
   const discussManage = () => {
-    // 依据ID获取博文和讨论列表
+    // 依据ID获取博文的讨论列表
     const getDiscessListById = (id) => {
-      return DiscussList['b' + id].discuessList
+      return discussList['b' + id].discuessList
     }
 
     // 添加新讨论
     const add = (id) => {
       const myDate = new Date()
       const newDiscuss = {
-          nick: DiscussForm.nick,
+          nick: discussForm.nick,
           addTime: `${myDate.getFullYear()}-${myDate.getMonth()+1}-${myDate.getDate()}`,
-          concent: DiscussForm.concent,
+          concent: discussForm.concent,
           agreeCount: 1
       }
-      DiscussList['b' + id].discuessList.push(newDiscuss)
+      discussList['b' + id].discuessList.push(newDiscuss)
     }
 
     
@@ -287,17 +231,15 @@
       getDiscessListById
     }
   }
-
+  
   // vue
   const vueBlog = {
     setup() {
+      console.log(Vue)
       // 定义数据
-      const groupForm = GroupForm // 分组表单
-      const blogForm = BlogForm // 博文表单
-      const discussForm = DiscussForm // 讨论表单
-      
-      const groupList = GroupList // 分组列表
-      const blogList = BlogList // 博文列表
+      // const blogForm = BlogForm // 博文表单
+      // const discussForm = DiscussForm // 讨论表单
+      // const blogList = BlogList // 博文列表
       
       const blog = Vue.ref({}) // 博文
       const discussList = Vue.ref({}) // 讨论列表
@@ -323,16 +265,14 @@
       }
 
       // 显示博文和讨论的事件
-      const blogClick = (id) => {
+      const showBlog = (id) => {
         isShowDiscuss.value = true
-        console.log('blog:',manageBlog.getBlogById(id))
         blog.value = manageBlog.getBlogById(id)
         discussList.value =  manageDiscuss.getDiscessListById(id)
       }
       
       // 导航事件
       const naviClick = (key, keyPath) => {
-        console.log(key, keyPath)
         switch (key) {
           case '1':
             // 首页
@@ -349,17 +289,15 @@
       }
 
       return {
-        groupForm, // 表单
-        blogForm,
+        blogForm, // 表单
         discussForm,
-        groupList, // 列表
-        blogList,
         blog,
+        blogList, // 列表
         discussList,
         isShowBlogForm, // 显示状态
         isShowDiscuss,
         showBlogForm, // 事件
-        blogClick,
+        showBlog,
         naviClick,
         manageBlog,
         manageDiscuss

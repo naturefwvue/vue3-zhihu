@@ -19,9 +19,10 @@
         
       </p>
       <p>ref 值：{{ref}}</p>
-      <p>refs.ref 值：{{refs.ref}}</p>
-      <p>refs.ref 值：{{refs.ref._value}}</p>
-      <p>refs.ref 属性_name：{{refs}}</p>
+      <p>refs.ref1 值：{{refs.name._object}}</p>
+      <p>refs.ref1 值：{{refs.ref}}</p>
+      <p>refs：{{refs}}</p>
+      <p>refs.ref1 属性_name：{{refs.ref}}</p>
       <hr>
       <p>ref 数组
         <input type="button" @click="refClick.ref_11" value="push"></input> &nbsp; 
@@ -44,7 +45,7 @@
         <input type="button" @click="retClick.reactive_3" value="变成对象"></input> &nbsp; 
         
       </p>
-      <p>rets.reactive 值：{{rets.reactive}}</p>
+      <p>rets.reactive 值111：{{reactive}}</p>
       <p>rets.reactive 属性_name：{{rets.reactive.name}}</p>
       <hr>
       
@@ -80,9 +81,10 @@
   <script type="text/javascript">
     const vueComposition = {
       setup() {
+        console.log(Vue)
         const value = Vue.ref('11')
         // ref的演示 
-        const ref = Vue.ref(1)
+        const ref = Vue.ref({name:'aaaa'})
         const ref_1 = () => {
           ref.value += 1
           console.log('ref_1:',ref)
@@ -111,7 +113,7 @@
         }
     
         // reacte的演示 
-        let reactive = Vue.reactive(1)
+        let reactive = Vue.reactive({name: 'nnnn'})
         console.log('reactive:',reactive)
         const reactive_1 = () => {
           reactive += 1
@@ -173,8 +175,9 @@
 
         return {
           ref,
+          ...Vue.toRefs(reactive),
           refs:{
-            ref, // 
+            ...Vue.toRefs(ref.value), // 
             refArror, // 
             refRetrun, // 
           },

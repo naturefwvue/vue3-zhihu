@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, toRefs } from 'vue'
 // import { BellOutlined } from '@ant-design/icons-vue'
 // import { reactive } from 'vue'
 import { vueLife } from '../views/js/vue-life.js'
@@ -29,6 +29,11 @@ export default {
     blogList: Array
   },
   setup (props, ctx) {
+    const aa = toRefs(props)
+    const bb = []
+    // Object.assign(bb, aa.blogList.value.concat())
+    bb.push({ title: aa.blogList.value[0].title })
+    bb[0].title = 'aaa'
     vueLife('blog-list')
     // 显示博文详细
     const showBlog = (id) => {

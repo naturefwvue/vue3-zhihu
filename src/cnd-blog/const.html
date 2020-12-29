@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>ES 6 的let</title>
+    <script src="js/vue.global.js"></script>
+  </head>
+  <body>
+    <div id="app">
+     const 的测试
+    </div>
+
+  <script type="text/javascript">
+    function test() {
+      const aa = 1;
+      console.log(aa) //
+      // aa = 2; // 报错
+      
+      /*
+      const arr = [1,2,3]
+      console.log(arr) // [1, 2, 3]
+      arr.push(5)
+      console.log(arr) // [1, 2, 3, 5]
+      arr[0] = 111
+      console.log(arr) // [111, 2, 3, 5]
+
+      const arr2 = [4,5,...arr]
+      console.log(arr2) // [4, 5, 111, 2, 3, 5]
+
+      const arr3 = [7,8] // 7,8 被覆盖
+      Object.assign(arr3, arr)
+      console.log(arr3) // [111, 2, 3, 5]
+
+      const arr4 = [7,8] //
+      arr4 = [...arr] // 报错 
+      console.log(arr4) // [111, 2, 3, 5]
+
+      arr = [7,8,9] // 报错
+      console.log(arr) //
+      */
+
+      const foo = {title: '我是标题'}
+      console.log(foo) //
+      
+      foo.name = '新名称'
+      console.log(foo) // 可以修改属性值
+      
+      foo.title = '新标题'
+      console.log(foo) // 可以增加属性
+      
+      Object.assign(foo, {age:65})
+      console.log(foo) // 合并对象
+      
+      // foo = {newTitle: '这个就不行了'} // 报错
+
+      const code = '12345678'
+      const code2 = [...code].filter((s,index,arr)=>{if (index>3 && index<5) arr[index]=s; else arr[index]='*'; return false }).join()
+      // const code2 = [...code].filter((s,index)=>{return (index>=3 && index<=5)} ).join('')
+      console.log(code2,code)
+      
+      const sym1 = Symbol('test')
+      const sym2 = Symbol('test')
+
+      console.log(sym1)
+      console.log(sym2)
+      console.log(sym2 === sym1)
+
+      const foo2 = {
+        [sym1]:'11',
+        [sym2]:'22'
+      }
+
+      const foo3 = {
+        [sym1]:'111',
+        [sym2]:'222',
+        ...foo2
+      }
+
+      const sym3 = Symbol('test')
+      const sym4 = Symbol('test')
+      const foo4 = {
+        [sym3]:'111',
+        [sym4]:'222',
+        ...foo2
+      }
+
+      console.log(foo2)
+      console.log(foo3)
+      console.log(foo4)
+
+      console.log(foo4[sym4])
+
+      for(const key in foo4){
+        console(key,foo4[key])
+      }
+
+      const arrSymbols = Object.getOwnPropertySymbols(foo4)
+      console.log(arrSymbols)
+      console.log(foo4[arrSymbols[0]])
+
+      const sym11 = Symbol.for('test1')
+      const sym22 = Symbol.for('test1')
+      console.log(sym22 === sym11)
+
+      const academicDegree = {
+        bachelor:Symbol.for('学士'),
+        master:Symbol.for('硕士'),
+        doctor:Symbol.for('博士')
+      }
+
+      const fooo = '硕士3'
+      console.log(Symbol.for(fooo))
+      console.log(academicDegree.masters)
+
+      switch(Symbol.for(fooo)){
+        case academicDegree.bachelor:
+          console.log('是学士')
+          break;
+        case academicDegree.master:
+          console.log('是硕士')
+          break;
+        case academicDegree.doctor:
+          console.log('是博士')
+          break;
+        case undefined:
+          console.log('啥都没有')
+          break;
+      }
+
+      const 学位 = {
+        学士:Symbol.for('学士'),
+        硕士:Symbol.for('硕士'),
+        博士:Symbol.for('博士')
+      }
+
+      switch(Symbol.for(fooo)){
+        case 学位.学士:
+          console.log('还是学士')
+          break;
+        case 学位.硕士:
+          console.log('还是硕士')
+          break;
+        case 学位.博士:
+          console.log('还是博士')
+          break;
+      }
+
+      class aaclass {
+        a = '33';
+        // 构造函数
+        constructor(a) {
+          this.a = a
+        }
+        // 某某函数
+        toString() {
+          return `我的a是${this.a}`
+        }
+
+        show(){
+          console.log('aa里面的show')
+        }
+
+      }
+
+      class bbClass extends aaclass {
+
+      }
+
+      console.log('typeof:', typeof aaclass)
+      console.log('aaclass:', aaclass)
+      console.log('aaclass.a:', aaclass.a)
+      console.log('aaclass.toString', aaclass.toString())
+
+      const myClass = new aaclass('3333')
+      console.log('typeof:', typeof myClass)
+      console.log('myClass:', myClass)
+      console.log('myClass.a:', myClass.a)
+      console.log('myClass.toString:', myClass.toString())
+
+      myClass.show()
+
+      console.log([...'123456789'].map((s,index) => (index>2&&index<5)?'*':s).join(''));
+
+    }
+
+    test()
+  </script>
+</body>
+</html>

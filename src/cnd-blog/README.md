@@ -22,4 +22,12 @@ https://gitbook.cn/gitchat/activity/5f7fd08d86b3d00f37ea4c5e
 * 删除讨论
 * 点赞、浏览计数
 
+## test.html 
+测试ref和reactive
+
+## test2.html 
+测试ref和reactive和return
+
+## test3.html 
+测试 Promise
 

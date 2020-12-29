@@ -14,18 +14,85 @@
       <p>ref演示</p>
        
       <p>ref 值：{{ref}}</p>
-      
+
        
     </div>
 
   <script type="text/javascript">
+      // resolve(）不同于return, resolve()执行完成后后面的代码还会执行。
+
+// resolve,reject是形式参数，可以是任意写法，如(res, rej),默认第一个参数实现的是resolve功能；第二个参数实现的是reject功能。
+  const myPost = (url, data) => {
+    // 接收url 和data，向后端提交
+    console.log('url:', url)
+    console.log('data:', data)
+    const p = new Promise((resolve,reject)=>{ 
+      console.log("myPost:")
+      data.push('处理完毕') 
+      resolve(data) // 返回参数
+      reject('失败了')
+    })
+    return p
+  }
+
     const vueComposition = {
       setup() {
-        const value = Vue.ref('11')
-        const show = (msg) => {
+       
+        const ref1 = Vue.ref('')
+        const ref2 = Vue.ref('')
+        const ref3 = Vue.ref('')
+        const ref4 = Vue.ref('')
+
+        // 连续。发起第一次请求
+        myPost('urla', [1,2,3]).then((data) => {
+          console.log("第一个调用完成：")
+          console.log(data)
+          return myPost('urlb', data) // 发起第二次请求
+        }).then((data) => {
+          console.log("第二个调用完成：")
+          console.log(data)
+          ref2.value = data
+          return myPost('urlc', data) // 发起第三次请求
+        }).then((data) => {
+          console.log("第三个调用完成：")
+          console.log(data)
+          ref3.value = data
+          return myPost('urld', data) // 发起第四次请求
+        }).then((data) => {
+          console.log("第四个调用完成：")
+          console.log(data)
+        })
+        
+        // 一起调用
+        const data1 = [1,2,3]
+        Promise.all([
+          myPost('urla', data1),
+          myPost('urlb', data1),
+          myPost('urlc', data1)
+        ]).then((data) => {
+            console.log("一起调用，一起返回：")
+            console.log(data)
+            console.log(data[1])
+            ref1.value = data[0]
+            ref2.value = data[1]
+            ref3.value = data[2]
+        },(msg) => {
           console.log(msg)
-        }
-        console.log(Vue)
+        })
+
+        
+
+        // 调用 myPost 
+        myPost('url1', [1,2,3]).then((data) => {
+          console.log("单次调用的结果:")
+          console.log(data)
+        },(msg) => {
+          console.log('myPost的else'+msg)
+        })
+        
+        const value = Vue.ref('11')
+        
+        // console.log(Vue)
         Vue.onBeforeMount(() => {
           console.log('onBeforeMount')
         }) // 
@@ -64,11 +131,32 @@
           console.log('onRenderTriggered')
         }) // 
        
-
+ /*
+        console.log("1")
+        const aa = new Promise((resolve,reject)=>{ // resolve,reject是形式参数，可以是任意写法，如(res, rej),默认第一个参数实现的是resolve功能；第二个参数实现的是reject功能。
+          console.log("2")
+          // console.log(resolve)
+          resolve("成功了")
+          console.log("3") //resolve(）不同于return, resolve()执行完成后后面的代码还会执行。
+          // console.log(reject) 
+          reject('失败了')
+        })
+        console.log("4")
+        aa.then(function(msg) {
+          console.log('aa的then'+msg)
+        },function (msg) {
+          console.log('aa的else'+msg)
+        })
+        console.log("5")
+        */
         // onActivated onBeforeMount  onBeforeUnmount onBeforeUpdate onDeactivated 
         // onErrorCaptured onRenderTracked onRenderTriggered onUnmounted
         // onUpdated 
         return {
+          ref1,
+          ref2,
+          ref3,
+          ref4,
           value
         }
       }

@@ -13,7 +13,7 @@
     <script src="https://unpkg.com/element-plus/lib/index.full.js"></script>
   </head>
   <body>
-    <div id="blog">{{manageBlog}}
+    <div id="blog">
       <!--导航-->
       <el-menu
         default-active="1"
@@ -274,7 +274,6 @@
     // 点赞
     const agreeCountAdd = (id) => {
       BlogList.filter(item => item.id === id)[0].agreeCount += 1
-
     }
     
     // 添加新博文

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>vue3 composition API的 reactive  </title>
+    <script src="js/vue.global.js"></script>
+    <script src="js/vue-router.global.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <input type="button" @click="changeObject" value="设置新对象"/><br>
+      reactive的值：{{person}} <br>
+      reactive的name：{{person.name}} <br>
+      reactive的age：{{person.age}} <br>
+      
+    </div>
+
+  <script type="text/javascript">
+    let onWatch = (obj, setBind, getLogger) => {
+      let handler = {
+        get(target, property, receiver) {
+          getLogger(target, property)
+          return Reflect.get(target, property, receiver)
+        },
+        set(target, property, value, receiver) {
+          setBind(value, property)
+          return Reflect.set(target, property, value)
+        }
+      }
+      return new Proxy(obj, handler)
+    }
+
+  let obj = { a: 1 }
+  let p = onWatch(
+    obj,
+    (v, property) => {
+      console.log(`监听到属性${property}改变为${v}`)
+    },
+    (target, property) => {
+      console.log(`'${property}' = ${target[property]}`)
+    }
+  )
+  console.log(p)
+  p.a = 2 // 监听到属性a改变
+
+    const vueComposition = {
+      // reactive 的测试
+      setup () {
+        let person = Vue.reactive({name: 'nature'})
+        console.log(person)
+        console.log(person.set)
+
+        // 变更对象的测试
+        const changeObject = () => {
+          person = Vue.reactive({name: 'jyk'})
+          console.log(person)
+        }
+
+        return {
+          person,
+          changeObject
+        }
+      }
+    }
+    const vmBlog = Vue.createApp(vueComposition).mount('#app')
+
+  </script>
+
+  </body>
+
+</html>

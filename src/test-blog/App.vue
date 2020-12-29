@@ -6,9 +6,11 @@
           <span style="cursor: pointer;" @click="naviClick(1)">首页</span> |
           <!--博文表单-->
           <blogForm
-              :blog="form.blog"
-              :groupList="list.group"
-              @submitblog="submitBlog"/>
+            v-model:isShow="isShow.blogForm"
+            :blog="form.blog"
+            :groupList="list.group"
+            @submitblog="submitBlog"
+          />
         </div>
       </a-layout-header>
       <a-layout style="margin:0px auto;width:850px;">
@@ -16,9 +18,9 @@
           <!--博文列表-->
           <blogList v-if="isShow.blogList" :blogList="list.blog" @showblog="showblog" @updateagreecount="updateAgreeCount"/>
           <!--博文详细-->
-          <blogInfo v-if="isShow.blogInfo" :blogInfo="list.blogInfo" @showblog="showblog"/>
+          <blogInfo v-if="isShow.blogInfo" :blogInfo="list.blogInfo" @updateblog="updateBlog"/>
           <!--讨论列表-->
-          <discussList v-if="isShow.blogInfo" :discussList="list.discuss" @showblog="showblog"/>
+          <discussList v-if="isShow.blogInfo" :discussList="list.discuss"/>
           <!--讨论表单-->
           <discussForm v-if="isShow.blogInfo" @submit="submitDiscuss"/>
         </a-layout-content>
@@ -27,7 +29,7 @@
           <groupList :groupList="list.group" @findblog="findBlog"/>
         </a-layout-sider>
       </a-layout>
-      <a-layout-footer>自然框架，vue3，antdv</a-layout-footer>
+      <a-layout-footer>自然框架，vue3，antdv {{aa}}</a-layout-footer>
     </a-layout>
   </div>
 </template>
@@ -62,11 +64,22 @@ const list = reactive({
 // 表单
 const form = reactive({
   group: {},
-  blog: {},
+  blog: { title: '新标题' },
   discuss: {}
 })
 
+const myMixins = {
+  setup () {
+    alert('我是mixins')
+    const aa = ref('aaaa')
+    return {
+      aa
+    }
+  }
+}
+
 export default {
+  mixins: [myMixins],
   name: 'blog',
   components: {
     blogList, // 博文列表
@@ -125,6 +138,14 @@ export default {
       blogAgreeCount(list.blog[index].id, count)
     }
 
+    // 准备修改博文
+    const updateBlog = (id) => {
+      form.blog = getBlogInfo(id)
+      isShow.blogForm = true
+      // isShow.blogList = true
+      // isShow.blogInfo = false
+    }
+
     // 添加、修改博文
     const submitBlog = (blog) => {
       addNewBlog(blog)
@@ -167,6 +188,7 @@ export default {
       list,
       form,
       updateAgreeCount, // 博文列表点赞
+      updateBlog, // 准备修改博文
       submitBlog, // 添加、修改博文
       submitDiscuss, // 添加讨论
       showblog, // 显示博文详细 + 讨论列表

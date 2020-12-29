@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>ES 6 的let</title>
+    <script src="js/vue.global.js"></script>
+  </head>
+  <body>
+    <div id="app">
+     let 的测试
+    </div>
+
+  <script type="text/javascript">
+    function test() {
+      console.log(v)
+      var v = 1;
+      
+      let a = 1;
+
+      let arr = [1,2,3]
+      for (var i = 0; i<arr.length;i++) {
+        console.log(i)
+      }
+      console.log(i) // 3
+
+      for (let j = 0; j<arr.length;j++) {
+        console.log(j)
+      }
+      console.log(j) // 3
+
+      for (let j = 0; j<arr.length;j++) {
+        let j = '123'
+        console.log(j)
+
+      }
+
+      let aa = 0
+      console.log(aa) //
+      aa = 'aaa'
+      console.log(aa) //
+      aa = {name: 'ttt'}
+      console.log(aa) //
+      aa = [5,6,7]
+      console.log(aa) //
+
+      aa = function () {
+        console.log('变成函数')
+      }
+      console.log(aa) //
+
+    }
+
+    test()
+  </script>
+</body>
+</html>

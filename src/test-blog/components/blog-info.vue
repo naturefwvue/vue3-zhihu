@@ -3,7 +3,8 @@
   <a-card style="margin: 22px;padding: 10px; ">
     {{blogInfo.title}} {{blogInfo.addTime}}<br>
     <p v-html="blogInfo.concent"></p>
-    人气：{{blogInfo.viewCount}}- 点赞：{{blogInfo.agreeCount}}<br>
+    人气：{{blogInfo.viewCount}}- 点赞：{{blogInfo.agreeCount}} -
+    <span @click="updateBlog(blogInfo.id)">修改</span><br>
   </a-card>
 </template>
 
@@ -20,8 +21,12 @@ export default {
   },
   setup (props, ctx) {
     vueLife('blog-info')
-    return {
 
+    const updateBlog = (id) => {
+      ctx.emit('updateblog', id)
+    }
+    return {
+      updateBlog
     }
   }
 

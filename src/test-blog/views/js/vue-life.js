@@ -14,6 +14,7 @@ import {
 
 export function vueLife (flag) {
   let index = 0
+  console.log(`${flag}-${index++} -- setup`)
   onBeforeMount(() => {
     console.log(`${flag}-${index++} -- onBeforeMount`)
   }) //
@@ -28,11 +29,14 @@ export function vueLife (flag) {
     console.log(`${flag}-${index++} -- onUnmounted`)
   }) //
 
-  onDeactivated(() => { // 关闭、未激活？
-    console.log(`${flag}-${index++} -- onDeactivated`)
-  }) //
-  onActivated(() => { // 启动时、激活
+  // activated,deactivated这两个生命周期函数一定是要在使用了keep-alive组件后才会有的，否则则不存在
+  onActivated((event) => { // 启动时、激活
     console.log(`${flag}-${index++} -- onActivated`)
+    console.log(event)
+  }) //
+  onDeactivated((event) => { // 关闭、未激活？
+    console.log(`${flag}-${index++} -- onDeactivated`)
+    console.log(event)
   }) //
 
   onBeforeUpdate(() => {
@@ -42,13 +46,16 @@ export function vueLife (flag) {
     console.log(`${flag}-${index++} -- onUpdated`)
   }) //
 
-  onErrorCaptured(() => { // 捕获错误时
+  onErrorCaptured((errorMsg) => { // 渲染出错时
     console.log(`${flag}-${index++} -- onErrorCaptured`)
+    console.log(errorMsg)
   }) //
-  onRenderTracked(() => { // 渲染跟踪时
+  onRenderTracked((event) => { // 渲染跟踪时
     console.log(`${flag}-${index++} -- onRenderTracked`)
+    console.log(event)
   }) //
-  onRenderTriggered(() => { // 渲染触发时
+  onRenderTriggered((event) => { // 渲染触发时
     console.log(`${flag}-${index++} -- onRenderTriggered`)
+    console.log(event)
   }) //
 }
