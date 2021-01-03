@@ -10,22 +10,27 @@ const routes = [
   {
     path: '/websql',
     name: 'websql',
-    component: () => import('../views/websql.vue')
+    component: () => import('../views/test/websql.vue')
   },
   {
     path: '/indexDB',
     name: 'indexDB',
-    component: () => import('../views/indexDB.vue')
+    component: () => import('../views/test/indexedDB.vue')
+  },
+  {
+    path: '/indexDB2',
+    name: 'indexDB2',
+    component: () => import('../views/test/indexedDB2.vue')
   },
   {
     path: '/localStorage',
     name: 'localStorage',
-    component: () => import('../views/localStorage.vue')
+    component: () => import('../views/test/localStorage.vue')
   },
   {
     path: '/sessionStorage',
     name: 'sessionStorage',
-    component: () => import('../views/sessionStorage.vue')
+    component: () => import('../views/test/sessionStorage.vue')
   }
 ]
 

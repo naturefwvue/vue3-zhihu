@@ -1,9 +1,9 @@
 <template>
   <div class="home">
-    websql的尝试 <br>
+    indexedDB 的尝试 <br>
 
     <input type="button" @click="sqlCreate" value="建立sql">
-    <input type="button" @click="sqlSelect" value="读取sql">
+    <input type="button" @click="update" value="读取sql">
 
   </div>
 </template>
@@ -12,19 +12,24 @@
 // @ is an alias to /src
 
 export default {
-  name: 'websql',
+  name: 'indexedDB',
   components: {
   },
   setup (props, ctx) {
     /**
      * IndexedDB
      * */
-    var db /* 数据库对象 */
+    /* 数据库对象 */
+    var db = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB
+    if (!db) {
+      console.log('你的浏览器不支持IndexedDB')
+    }
     var objectStore /* 仓库(表) */
     /**
      * 创建数据库
      */
     var request = window.indexedDB.open('myIndex', 3) /* 该域中的数据库myIndex */
+    console.log('request', request)
     request.onerror = function (event) {
       console.log('open database error')
     }
@@ -38,11 +43,12 @@ export default {
       // update();
       // remove();
       readAll()
-      console.log(db)
+      console.log('db', db)
     }
 
     /**
      * 创建表
+     * 第一次打开成功后或者版本有变化自动执行以下事件：一般用于初始化数据库。
      */
     request.onupgradeneeded = function (event) {
       db = event.target.result /* 数据库对象 */
@@ -52,7 +58,7 @@ export default {
         objectStore.createIndex('name', 'name', { unique: false })
         objectStore.createIndex('email', 'email', { unique: true })
       }
-      console.log(db)
+      console.log('onupgradeneeded', db)
     }
     /**
      * 插入数据
@@ -113,7 +119,7 @@ export default {
     const update = () => {
       var request = db.transaction(['person'], 'readwrite')
         .objectStore('person')
-        .put({ id: 1, name: '李四', age: 35, email: 'lisi@example.com' })
+        .put({ id: 1, name: '李四2222', age: 35, email: 'lisi@example.com' })
       request.onsuccess = function (event) {
         console.log('数据更新成功')
       }
