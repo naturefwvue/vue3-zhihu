@@ -56,7 +56,7 @@ export default {
         objectStore = db.createObjectStore('person', { keyPath: 'id' }) /* 创建person仓库(表) 主键 */
         // objectStore = db.createObjectStore('person',{autoIncrement:true});/*自动创建主键*/
         objectStore.createIndex('name', 'name', { unique: false })
-        objectStore.createIndex('email', 'email', { unique: true })
+        objectStore.createIndex('email', 'email', { unique: false })
       }
       console.log('onupgradeneeded', db)
     }
@@ -64,11 +64,13 @@ export default {
      * 插入数据
      */
     const add = () => {
-      var request = db.transaction(['person'], 'readwrite')
+      var request = db.transaction('person', 'readwrite')
         .objectStore('person')
-        .add({ id: 1, name: '张三', age: 24, email: 'zhangsan@example.com' })
+        .add({ id: new Date().valueOf(), name: '张三', age: 24, email: 'zhangsan@example.com' })
       request.onsuccess = function (event) {
+        alert('数据写入成功22')
         console.log('数据写入成功')
+        // request.commit()
       }
       request.onerror = function (event) {
         console.log('数据写入失败')
