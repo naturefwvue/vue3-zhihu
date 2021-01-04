@@ -1,14 +1,24 @@
 <template>
   <div class="home">
     indexedDB 的尝试 <br>
+    blogList:{{blogList}}<br>
+    blogId:{{blogId}}<br>
+    blog:{{blog}}<br>
+    id:<input type="text" v-model="blogId" ><br>
+    title:<input type="text" v-model="blog.title" ><br>
+    msg:<input type="text" v-model="blog.msg" ><br>
 
-    <input type="button" @click="addPerson" value="添加人员">
-    <input type="button" @click="update" value="读取sql">
+    <input type="button" @click="addBlog" value="添加数据"><br>
+    <input type="button" @click="getBlog" value="获取数据"><br>
+    <input type="button" @click="updateBlog" value="修改数据"><br>
+    <input type="button" @click="deleteBlog" value="删除数据"><br>
+    <input type="button" @click="getBlogByGroupId" value="通过索引获取数据"><br>
 
   </div>
 </template>
 
 <script>
+import { ref, toRaw } from 'vue'
 // indexedDB 的管理类
 const indexedDBManage = (config) => {
   /**
@@ -33,7 +43,7 @@ const indexedDBManage = (config) => {
     // 创建数据库，并且打开
     const name = config.dbName || dbName
     const ver = config.ver || version
-    const dbRequest = window.indexedDB.open(name, ver)
+    const dbRequest = myDB.open(name, ver)
     /* 该域中的数据库myIndex */
     console.log('dbRequest - 打开indexedDb数据库：', dbRequest)
 
@@ -92,7 +102,7 @@ const indexedDBManage = (config) => {
 
   // 添加对象
   const addObject = (objectName, object) => {
-    alert('内部准备添加数据')
+    // alert('内部准备添加数据')
     const objectPromise = new Promise((resolve, reject) => {
       console.log('addObject - 内部的db：', db)
       const tranRequest = db.transaction(objectName, 'readwrite')
@@ -206,7 +216,7 @@ const indexedDBManage = (config) => {
       storeRequest.onsuccess = (event) => {
         console.log('getObject - 内部的数据获取成功：', event.target.result)
         tranRequest.commit()
-        resolve(tranRequest.result)
+        resolve(event.target.result)
       }
       storeRequest.onerror = function (event) {
         console.log('getObject - 内部的数据获取失败', event)
@@ -215,6 +225,52 @@ const indexedDBManage = (config) => {
       }
       tranRequest.onerror = function (event) {
         console.log('getObject - 事务失败', event)
+        console.log(tranRequest.error)
+        reject(event)
+      }
+    })
+    return objectPromise
+  }
+
+  // 依据 索引 + 游标 获取对象
+  const getObjectByIndex = (objectName, indexName, id) => {
+    const objectPromise = new Promise((resolve, reject) => {
+      console.log('getObjectByIndex - 内部的db：', db)
+      const tranRequest = db.transaction(objectName, 'readwrite')
+      console.log('getObjectByIndex - 内部的tranRequest：', tranRequest)
+
+      const store = tranRequest.objectStore(objectName)
+      console.log('getObjectByIndex - 内部的store：', store)
+
+      const indexRequest = store.index(indexName)
+      console.log('getObjectByIndex - 内部的storeRequest：', indexRequest)
+
+      const reData = []
+      const cursorRequest = indexRequest.openCursor(null, IDBCursor.prev)
+
+      cursorRequest.onsuccess = (event) => {
+        console.log('getObjectByIndex - 内部的数据获取成功：', cursorRequest)
+        const cursor = event.target.result
+        if (cursor) {
+          reData.push(cursor.value)
+          console.log('cursor值：', cursor.value)
+          cursor.continue()
+        }
+        // tranRequest.commit()
+        resolve(event.target.result)
+      }
+
+      tranRequest.oncomplete = (event) => {
+        console.log('reData', reData)
+        // note.innerHTML += '<li>Transaction completed.</li>';
+      }
+      cursorRequest.onerror = function (event) {
+        console.log('getObjectByIndex - 内部的数据获取失败', event)
+        console.log(event.target.error)
+        reject(event)
+      }
+      tranRequest.onerror = function (event) {
+        console.log('getObjectByIndex - 事务失败', event)
         console.log(tranRequest.error)
         reject(event)
       }
@@ -246,20 +302,21 @@ const indexedDBManage = (config) => {
     updateObject, // 修改对象的Promise
     deleteObject, // 删除对象的Promise
     getObject, // 获取对象的Promise
+    getObjectByIndex, // 通过索引获取对象的Promise
     readAll
   }
 }
 
 const config = {
   dbName: 'dbTest',
-  ver: 3,
-  objectStores: [
+  ver: 4,
+  objectStores: [ // 建库依据
     {
       objectStoreName: 'blog',
-      index: [
+      index: [ // 索引
         {
           name: 'groupId',
-          unique: false
+          unique: false // 是否可以重复
         }
       ]
     },
@@ -280,27 +337,112 @@ export default {
   components: {
   },
   setup (props, ctx) {
-    const { dbOpen, addObject } = indexedDBManage(config)
+    const {
+      dbOpen,
+      addObject,
+      updateObject,
+      deleteObject,
+      getObject,
+      getObjectByIndex
+    } = indexedDBManage(config)
 
-    const addPerson = () => {
+    // 修改数据用
+    const blogId = ref(1609669985104)
+
+    // 添加修改用的表单
+    const blog = ref({
+      id: 1,
+      groupId: 2,
+      title: '新的博客',
+      msg: '博客内容'
+    })
+    // 博文列表
+    const blogList = ref([])
+
+    // 添加数据的测试
+    const addBlog = () => {
+      console.log('wwwwwwwwwww', toRaw(blog.value))
       dbOpen().then((db) => {
         // 数据库打开成功，可以添加数据了
-        const blog = {
-          id: new Date().valueOf(),
-          title: '新的博客',
-          groupId: 2,
-          msg: '博客内容'
-        }
-        addObject('blog', blog).then((data) => {
-          alert('添加数据成功')
+        blog.value.id = new Date().valueOf()
+        addObject('blog', toRaw(blog.value)).then((newId) => {
+          alert('添加数据成功', newId)
         },
         (msg) => {
-          alert(msg)
+          alert('添加数据失败')
+          console.log(msg)
         })
       })
     }
+
+    // 修改数据的测试
+    const updateBlog = () => {
+      dbOpen().then((db) => {
+        // 数据库打开成功，可以修改数据了
+        blog.value.id = blogId.value
+        updateObject('blog', toRaw(blog.value)).then((newId) => {
+          alert('修改数据成功', newId)
+        },
+        (msg) => {
+          alert('修改数据失败')
+          console.log(msg)
+        })
+      })
+    }
+
+    // 删除数据的测试
+    const deleteBlog = () => {
+      dbOpen().then((db) => {
+        // 数据库打开成功，可以删除数据了
+        deleteObject('blog', parseInt(blogId.value)).then((newId) => {
+          alert('删除数据成功', newId)
+        },
+        (msg) => {
+          alert('删除数据失败')
+          console.log(msg)
+        })
+      })
+    }
+
+    // 获取一个数据的测试
+    const getBlog = () => {
+      dbOpen().then((db) => {
+        // 数据库打开成功，可以获取数据了
+        getObject('blog', parseInt(blogId.value)).then((data) => {
+          alert('获取数据成功', data)
+          blog.value = data
+        },
+        (msg) => {
+          alert('获取数据失败')
+          console.log(msg)
+        })
+      })
+    }
+
+    // 通过索引 获取 数据的测试
+    const getBlogByGroupId = () => {
+      dbOpen().then((db) => {
+        // 数据库打开成功，可以获取数据了
+        getObjectByIndex('blog', 'groupId', 2).then((data) => {
+          alert('获取数据成功', data)
+          blogList.value = data
+        },
+        (msg) => {
+          alert('获取数据失败')
+          console.log(msg)
+        })
+      })
+    }
+
     return {
-      addPerson
+      blog,
+      blogId,
+      blogList,
+      addBlog,
+      updateBlog,
+      getBlog,
+      getBlogByGroupId,
+      deleteBlog
     }
   }
 
