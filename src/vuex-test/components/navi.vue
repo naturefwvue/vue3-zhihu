@@ -2,11 +2,7 @@
 <template>
   <div id="nav" style="margin:0px auto;width:1050px;">
     <router-link to="/">首页</router-link> |
-    <router-link :to="{name:'websql'}">websql</router-link> |
-    <router-link :to="{name:'indexDB'}">indexDB</router-link> |
-    <router-link :to="{name:'indexDB2'}">indexDB2</router-link> |
-    <router-link :to="{name:'localStorage'}">localStorage</router-link> |
-    <router-link :to="{name:'sessionStorage'}">sessionStorage</router-link> |
+    <router-link :to="{name:'demo'}">演示</router-link> |
   </div>
 </template>
 

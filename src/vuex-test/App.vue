@@ -37,12 +37,13 @@ export default {
   text-align:left;
 }
 #components-layout-demo-basic {
-  text-align: center;
+  text-align: left;
 }
 #components-layout-demo-basic .ant-layout-header,
 #components-layout-demo-basic .ant-layout-footer {
   background: #7dbcea;
   color: #fff;
+  text-align: center;
 }
 #components-layout-demo-basic .ant-layout-footer {
   line-height: 1.5;
@@ -50,7 +51,7 @@ export default {
 #components-layout-demo-basic .ant-layout-sider {
   background: #dce7f0;
   color: #fff;
-  text-align: center;
+  text-align: left;
   line-height: 120px;
 }
 #components-layout-demo-basic .ant-layout-content {

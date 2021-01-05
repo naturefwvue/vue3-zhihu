@@ -8,28 +8,45 @@ const routes = [
     component: Home
   },
   {
-    path: '/websql',
-    name: 'websql',
-    component: () => import('../views/test/websql.vue')
+    path: '/demo',
+    name: 'demo',
+    component: () => import('../views/test/index.vue'),
+    children: [
+      {
+        path: 'websql',
+        name: 'websql',
+        meta: { title: 'websql 的演示' },
+        component: () => import('../views/test/websql.vue')
+      },
+      {
+        path: 'indexDB',
+        name: 'indexDB',
+        meta: { title: 'indexDB 的演示' },
+        component: () => import('../views/test/indexedDB.vue')
+      },
+      {
+        path: 'indexDB2',
+        name: 'indexDB2',
+        meta: { title: 'indexDB 的演示' },
+        component: () => import('../views/test/indexedDB2.vue')
+      },
+      {
+        path: 'localStorage',
+        name: 'localStorage',
+        meta: { title: 'localStorage 的演示' },
+        component: () => import('../views/test/localStorage.vue')
+      },
+      {
+        path: 'sessionStorage',
+        name: 'sessionStorage',
+        meta: { title: 'sessionStorage 的演示' },
+        component: () => import('../views/test/sessionStorage.vue')
+      }
+    ]
   },
   {
-    path: '/indexDB',
-    name: 'indexDB',
-    component: () => import('../views/test/indexedDB.vue')
-  },
-  {
-    path: '/indexDB2',
-    name: 'indexDB2',
-    component: () => import('../views/test/indexedDB2.vue')
-  },
-  {
-    path: '/localStorage',
-    name: 'localStorage',
-    component: () => import('../views/test/localStorage.vue')
-  },
-  {
-    path: '/sessionStorage',
-    name: 'sessionStorage',
+    path: '/blog',
+    name: 'blog',
     component: () => import('../views/test/sessionStorage.vue')
   }
 ]

@@ -207,7 +207,7 @@ const indexedDBManage = (config) => {
     alert('内部准备获取数据')
     const objectPromise = new Promise((resolve, reject) => {
       console.log('getObject - 内部的db：', db)
-      const tranRequest = db.transaction(objectName, 'readwrite')
+      const tranRequest = db.transaction(objectName, 'readreadnoly')
       console.log('getObject - 内部的tranRequest：', tranRequest)
 
       const store = tranRequest.objectStore(objectName)
@@ -235,23 +235,24 @@ const indexedDBManage = (config) => {
     return objectPromise
   }
 
-  // 获取 对象仓库里的所有 对象
+  // 获取 对象仓库里的所有 对象，使用游标
   // start 开始位置
   // count 获取数量，0表示获取全部
-  const getObjectByStore = (objectName, count, start) => {
+  const getObjectByStore = (objectName, count, start, description) => {
     const _start = start || 0
     const _count = count || 0
     const _end = _start + _count
+    const _description = description || 'prev' // 默认倒序
 
     const objectPromise = new Promise((resolve, reject) => {
       console.log('getObjectByStore - 内部的db：', db)
-      const tranRequest = db.transaction(objectName, 'readwrite')
+      const tranRequest = db.transaction(objectName, 'readreadnoly')
       console.log('getObjectByStore - 内部的tranRequest：', tranRequest)
 
       const store = tranRequest.objectStore(objectName)
       console.log('getObjectByStore - 内部的store：', store)
 
-      const cursorRequest = store.openCursor()
+      const cursorRequest = store.openCursor(null, _description)
       console.log('getObjectByStore - 内部的 cursorRequest', cursorRequest)
 
       const dataList = []
@@ -296,7 +297,7 @@ const indexedDBManage = (config) => {
   const getObjectByIndex = (objectName, indexName, value) => {
     const objectPromise = new Promise((resolve, reject) => {
       console.log('getObjectByIndex - 内部的db：', db)
-      const tranRequest = db.transaction(objectName, 'readwrite')
+      const tranRequest = db.transaction(objectName, 'readreadnoly')
       console.log('getObjectByIndex - 内部的tranRequest：', tranRequest)
 
       const store = tranRequest.objectStore(objectName)
@@ -333,7 +334,7 @@ const indexedDBManage = (config) => {
   const findObjectByIndex = (objectName, indexName, id) => {
     const objectPromise = new Promise((resolve, reject) => {
       console.log('getObjectByIndex - 内部的db：', db)
-      const tranRequest = db.transaction(objectName, 'readwrite')
+      const tranRequest = db.transaction(objectName, 'readreadnoly')
       console.log('getObjectByIndex - 内部的tranRequest：', tranRequest)
 
       const store = tranRequest.objectStore(objectName)
@@ -376,24 +377,6 @@ const indexedDBManage = (config) => {
     return objectPromise
   }
 
-  /**
-   * 遍历数据
-   */
-  const readAll = () => {
-    var objectStore = db.transaction(['person']).objectStore('person')
-    objectStore.openCursor().onsuccess = function (event) {
-      var cursor = event.target.result
-      if (cursor) {
-        console.log('Id:' + cursor.key)
-        console.log('Name:' + cursor.value.name)
-        console.log('Age:' + cursor.value.age)
-        console.log('Email:' + cursor.value.email)
-      } else {
-        console.log('没有更多数据了')
-      }
-    }
-  }
-
   return {
     dbOpen, // 打开数据库的Promise
     addObject, // 添加对象的Promise
@@ -402,8 +385,7 @@ const indexedDBManage = (config) => {
     getObject, // 获取对象的Promise
     getObjectByStore, // 获取表里的全部数据
     getObjectByIndex, // 通过索引获取对象的Promise
-    findObjectByIndex,
-    readAll
+    findObjectByIndex
   }
 }
 
@@ -537,17 +519,18 @@ export default {
 
     // 通过索引 获取 数据的测试
     const getBlogAll = () => {
-      dbOpen().then((db) => {
-        // 数据库打开成功，可以获取数据了
-        getObjectByStore('blog', 2, 3).then((data) => {
-          alert('获取数据成功', data)
-          blogList.value = data
-        },
-        (msg) => {
-          alert('获取数据失败')
-          console.log(msg)
-        })
+      getObjectByStore('blog', 2, 3).then((data) => {
+        alert('获取数据成功', data)
+        blogList.value = data
+      },
+      (msg) => {
+        alert('获取数据失败')
+        console.log(msg)
       })
+
+      // dbOpen().then((db) => {
+      // 数据库打开成功，可以获取数据了
+      // })
     }
     return {
       blog,
