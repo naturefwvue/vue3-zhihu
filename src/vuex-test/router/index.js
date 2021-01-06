@@ -47,7 +47,27 @@ const routes = [
   {
     path: '/blog',
     name: 'blog',
-    component: () => import('../views/test/sessionStorage.vue')
+    component: () => import('../views/blog/index.vue'),
+    children: [
+      {
+        path: 'list',
+        name: 'list',
+        meta: { title: '博客列表' },
+        component: () => import('../components/blog/blog-list.vue')
+      },
+      {
+        path: ':blogId',
+        name: 'blogInfo',
+        meta: { title: '博文和讨论' },
+        component: () => import('../components/blog/blog-info.vue')
+      },
+      {
+        path: 'write',
+        name: 'write',
+        meta: { title: '写博客列表' },
+        component: () => import('../components/blog/blog-form.vue')
+      }
+    ]
   }
 ]
 
