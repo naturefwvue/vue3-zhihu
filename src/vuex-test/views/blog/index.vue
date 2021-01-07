@@ -7,16 +7,20 @@
 
 <script>
 import { ref } from 'vue'
+import { myIndexedDB } from '../../store/indexedDB.js'
 
-// 博客的入口，初始化各种设置
 // 建立表结构等
 export default {
   name: 'demo-blog',
   components: {
   },
   setup () {
+    const { dbOpen } = myIndexedDB()
     const myTest = ref('avi')
     const openKeys = ref(['sub2'])
+
+    // 初始化
+    dbOpen()
 
     const handleClick = (e) => {
       console.log('click', e)
