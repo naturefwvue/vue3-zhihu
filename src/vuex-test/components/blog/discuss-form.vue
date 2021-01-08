@@ -14,23 +14,37 @@
 </template>
 
 <script>
-import { reactive } from 'vue'
+import { ref, reactive, toRaw } from 'vue'
+import { myIndexedDB } from '../../store/indexedDB.js'
+
 // 添加讨论
-import { vueLife } from '../views/js/vue-life.js'
+
+const discussForm = reactive({
+  id: 1,
+  blogId: 1,
+  nick: 'jyk',
+  concent: '这是一个讨论'
+})
 
 export default {
   name: 'discuess-form',
   props: {
+    blogId: Number
   },
   setup (props, ctx) {
-    vueLife('discuess-form')
-    const discussForm = reactive({
-      nick: 'jyk',
-      concent: '这是一个讨论'
-    })
-
+    const { addObject } = myIndexedDB()
+    // 获取博文ID
+    const blogId = ref(props.blogId)
+    // 设置讨论的实体类
+    discussForm.blogId = parseInt(blogId.value)
+    // 添加新的讨论
     const submit = () => {
-      ctx.emit('submit', discussForm)
+      discussForm.id = new Date().valueOf()
+      addObject('discuess', toRaw(discussForm)).then((id) => {
+        console.log(id)
+        // ctx.emit('update:isShow', false)
+        ctx.emit('submitblog', discussForm)
+      })
     }
 
     return {

@@ -58,6 +58,7 @@ const routes = [
       {
         path: ':blogId',
         name: 'blogInfo',
+        props: true,
         meta: { title: '博文和讨论' },
         component: () => import('../components/blog/blog-info.vue')
       },

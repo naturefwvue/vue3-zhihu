@@ -15,17 +15,36 @@
 // 显示讨论列表
 // 删除讨论，事件返回
 // 点赞讨论，事件返回
-import { vueLife } from '../views/js/vue-life.js'
+import { ref, watch } from 'vue'
+import { myIndexedDB } from '../../store/indexedDB.js'
 
 export default {
   name: 'discuess-list',
   props: {
-    discussList: Array
+    blogId: Number,
+    isReaload: Boolean
   },
   setup (props, ctx) {
-    vueLife('discuess-list')
-    return {
+    const { findObjectByIndex } = myIndexedDB()
+    const discussList = ref([])
+    const blogId = ref(props.blogId) // 读取属性值
 
+    const loadDiscussList = () => {
+      findObjectByIndex('discuess', 'blogId', parseInt(blogId.value)).then((data) => {
+        discussList.value = data
+      })
+    }
+    loadDiscussList()
+
+    watch(
+      () => props.isReaload,
+      (load, prevLoad) => {
+        loadDiscussList()
+      }
+    )
+
+    return {
+      discussList
     }
   }
 

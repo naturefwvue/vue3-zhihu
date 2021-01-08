@@ -47,7 +47,7 @@
 
 <script>
 // import { BellOutlined } from '@ant-design/icons-vue'
-import { reactive, ref } from 'vue'
+import { reactive, ref, toRaw } from 'vue'
 import { myIndexedDB } from '../../store/indexedDB.js'
 
 // 博文表单
@@ -77,7 +77,9 @@ export default {
     // 添加博文
     const handleOk = (e) => {
       confirmLoading.value = true
-      addObject(blogForm).then(() => {
+      blogForm.id = new Date().valueOf()
+      addObject('blog', toRaw(blogForm)).then((id) => {
+        console.log(id)
         confirmLoading.value = false
         // ctx.emit('update:isShow', false)
         ctx.emit('submitblog', blogForm)

@@ -1,5 +1,5 @@
 
-import { config } from './indexedDB.config'
+import { config } from './indexedDB.config.js'
 
 export function myIndexedDB () {
   /**
@@ -125,37 +125,41 @@ export function myIndexedDB () {
   }
 
   /**
-  * 添加对象
+  * 添加对象。objectName：对象库名；object：要添加的对象
   */
   const addObject = (objectName, object) => {
     // 定义一个 Promise 的实例
     const objectPromise = new Promise((resolve, reject) => {
-      const tranRequest = db.transaction(objectName, 'readwrite')
-      tranRequest
-        .objectStore(objectName)
-        .add(object)
-        .onsuccess = (event) => {
-          resolve(event.target.result) // 返回对象的ID
+      // 定义个函数，便于调用
+      const _addObject = () => {
+        const tranRequest = db.transaction(objectName, 'readwrite')
+        tranRequest
+          .objectStore(objectName)
+          .add(object)
+          .onsuccess = (event) => {
+            resolve(event.target.result) // 返回对象的ID
+          }
+        //
+        tranRequest.oncomplete = (event) => {
+          console.log('addObject -- oncomplete')
+          // tranRequest.commit()
+          resolve()
         }
-      //
-      tranRequest.oncomplete = (event) => {
-        console.log('addObject -- oncomplete')
-        tranRequest.commit()
-        resolve()
+        tranRequest.onerror = function (event) {
+          reject(event)
+        }
       }
-      tranRequest.onerror = function (event) {
-        reject(event)
+
+      // 判断数据库是否打开
+      if (typeof db === 'undefined') {
+        dbOpen().then(() => {
+          _addObject()
+        })
+      } else {
+        _addObject()
       }
     })
-
-    // 判断数据库是否打开
-    if (typeof db === 'undefined' || db === null) {
-      dbOpen().then(() => {
-        return objectPromise
-      })
-    } else {
-      return objectPromise
-    }
+    return objectPromise
   }
 
   /**
@@ -164,17 +168,13 @@ export function myIndexedDB () {
   const updateObject = (objectName, object) => {
     const objectPromise = new Promise((resolve, reject) => {
       const tranRequest = db.transaction(objectName, 'readwrite')
-      const store = tranRequest.objectStore(objectName)
-
-      const storeRequest = store.put(object)
-
-      storeRequest.onsuccess = (event) => {
-        tranRequest.commit()
-        resolve(event.target.result)
-      }
-      storeRequest.onerror = function (event) {
-        reject(event)
-      }
+      tranRequest
+        .objectStore(objectName)
+        .put(object)
+        .onsuccess = (event) => {
+          // tranRequest.commit()
+          resolve(event.target.result)
+        }
       tranRequest.onerror = function (event) {
         reject(event)
       }
@@ -186,21 +186,15 @@ export function myIndexedDB () {
   * 依据id删除对象
   */
   const deleteObject = (objectName, id) => {
-    alert('内部准备删除数据')
     const objectPromise = new Promise((resolve, reject) => {
       const tranRequest = db.transaction(objectName, 'readwrite')
-
-      const store = tranRequest.objectStore(objectName)
-
-      const storeRequest = store.delete(id)
-
-      storeRequest.onsuccess = (event) => {
-        tranRequest.commit()
-        resolve(event.target.result)
-      }
-      storeRequest.onerror = function (event) {
-        reject(event)
-      }
+      tranRequest
+        .objectStore(objectName)
+        .delete(id)
+        .onsuccess = (event) => {
+          // tranRequest.commit()
+          resolve(event.target.result)
+        }
       tranRequest.onerror = function (event) {
         reject(event)
       }
@@ -212,25 +206,35 @@ export function myIndexedDB () {
   * 依据id 获取对象
   */
   const getObject = (objectName, id) => {
-    alert('内部准备获取数据')
     const objectPromise = new Promise((resolve, reject) => {
-      const tranRequest = db.transaction(objectName, 'readreadnoly')
+      const _getObject = () => {
+        const tranRequest = db.transaction(objectName, 'readonly')
+        tranRequest
+          .objectStore(objectName)
+          .get(id)
+          .onsuccess = (event) => {
+            console.log('getObject -- onsuccess- event:', event)
+            resolve(event.target.result)
+          }
 
-      const store = tranRequest.objectStore(objectName)
-
-      const storeRequest = store.get(id)
-
-      storeRequest.onsuccess = (event) => {
-        tranRequest.commit()
-        resolve(event.target.result)
+        tranRequest.oncomplete = (event) => {
+          console.log('getObject -- oncomplete')
+          // tranRequest.commit()
+        }
+        tranRequest.onerror = function (event) {
+          reject(event)
+        }
       }
-      storeRequest.onerror = function (event) {
-        reject(event)
-      }
-      tranRequest.onerror = function (event) {
-        reject(event)
+      // 判断数据库是否打开
+      if (typeof db === 'undefined') {
+        dbOpen().then(() => {
+          _getObject()
+        })
+      } else {
+        _getObject()
       }
     })
+
     return objectPromise
   }
 
@@ -249,11 +253,11 @@ export function myIndexedDB () {
     const objectPromise = new Promise((resolve, reject) => {
       // 定义个函数，便于调用
       const _getObjectByStore = () => {
-        console.log('getObjectByStore-db22:', db)
-        const tranRequest = db.transaction(objectName, 'readonly')
         const dataList = []
         let cursorIndex = 0
 
+        console.log('getObjectByStore-db22:', db)
+        const tranRequest = db.transaction(objectName, 'readonly')
         const cursorRequest = tranRequest
           .objectStore(objectName)
           .openCursor(null, _description)
@@ -298,23 +302,31 @@ export function myIndexedDB () {
   */
   const getObjectByIndex = (objectName, indexName, value) => {
     const objectPromise = new Promise((resolve, reject) => {
-      const tranRequest = db.transaction(objectName, 'readreadnoly')
-      const store = tranRequest.objectStore(objectName)
-      const indexRequest = store.index(indexName)
+      const _getObjectByIndex = () => {
+        const tranRequest = db.transaction(objectName, 'readonly')
+        tranRequest
+          .objectStore(objectName)
+          .index(indexName)
+          .get(value).onsuccess = (event) => {
+            // tranRequest.commit()
+            resolve(event.target.result)
+          }
 
-      indexRequest.get(value).onsuccess = (event) => {
-        // tranRequest.commit()
-        resolve(event.target.result)
-      }
+        tranRequest.oncomplete = (event) => {
+          // note.innerHTML += '<li>Transaction completed.</li>';
+        }
 
-      tranRequest.oncomplete = (event) => {
-        // note.innerHTML += '<li>Transaction completed.</li>';
+        tranRequest.onerror = function (event) {
+          reject(event)
+        }
       }
-      indexRequest.onerror = function (event) {
-        reject(event)
-      }
-      tranRequest.onerror = function (event) {
-        reject(event)
+      // 判断数据库是否打开
+      if (typeof db === 'undefined') {
+        dbOpen().then(() => {
+          _getObjectByIndex()
+        })
+      } else {
+        _getObjectByIndex()
       }
     })
     return objectPromise
@@ -323,36 +335,51 @@ export function myIndexedDB () {
   /**
   * 依据 索引 + 游标 获取对象，可以获取多条
   */
-  const findObjectByIndex = (objectName, indexName, id) => {
+  const findObjectByIndex = (objectName, indexName, id, count, start, description) => {
+    const _start = start || 0
+    const _count = count || 0
+    const _end = _start + _count
+    const _description = description || IDBCursor.prev // 默认倒序
+
     const objectPromise = new Promise((resolve, reject) => {
-      const tranRequest = db.transaction(objectName, 'readreadnoly')
+      // 定义个函数，便于调用
+      const _findObjectByIndex = () => {
+        const dataList = []
+        let cursorIndex = 0
+        const tranRequest = db.transaction(objectName, 'readonly')
+        const cursorRequest = tranRequest
+          .objectStore(objectName)
+          .index(indexName)
+          .openCursor(null, _description)
 
-      const store = tranRequest.objectStore(objectName)
-
-      const indexRequest = store.index(indexName)
-
-      const reData = []
-      const cursorRequest = indexRequest.openCursor(null, IDBCursor.prev)
-
-      cursorRequest.onsuccess = (event) => {
-        const cursor = event.target.result
-        if (cursor) {
-          reData.push(cursor.value)
-          cursor.continue()
+        cursorRequest.onsuccess = (event) => {
+          const cursor = event.target.result
+          if (cursor) {
+            if (_end === 0 || (cursorIndex >= _start && cursorIndex < _end)) {
+              dataList.push(cursor.value)
+            }
+            cursorIndex++
+            cursor.continue()
+          }
+          // tranRequest.commit()
         }
-        // tranRequest.commit()
-        resolve(event.target.result)
+
+        tranRequest.oncomplete = (event) => {
+          console.log('findObjectByIndex - dataList', dataList)
+          resolve(dataList)
+        }
+        tranRequest.onerror = function (event) {
+          reject(event)
+        }
       }
 
-      tranRequest.oncomplete = (event) => {
-        console.log('reData', reData)
-        // note.innerHTML += '<li>Transaction completed.</li>';
-      }
-      cursorRequest.onerror = function (event) {
-        reject(event)
-      }
-      tranRequest.onerror = function (event) {
-        reject(event)
+      // 判断数据库是否打开
+      if (typeof db === 'undefined') {
+        dbOpen().then(() => {
+          _findObjectByIndex()
+        })
+      } else {
+        _findObjectByIndex()
       }
     })
     return objectPromise
