@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { ref, reactive, toRaw } from 'vue'
+import { ref, reactive } from 'vue'
 import { myIndexedDB } from '../../store/indexedDB.js'
 
 // 添加讨论
@@ -40,7 +40,7 @@ export default {
     // 添加新的讨论
     const submit = () => {
       discussForm.id = new Date().valueOf()
-      addObject('discuess', toRaw(discussForm)).then((id) => {
+      addObject('discuess', discussForm).then((id) => {
         console.log(id)
         // ctx.emit('update:isShow', false)
         ctx.emit('submitblog', discussForm)

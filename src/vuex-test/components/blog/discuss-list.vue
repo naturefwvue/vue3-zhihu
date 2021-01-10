@@ -36,6 +36,7 @@ export default {
     }
     loadDiscussList()
 
+    // 刷新讨论列表
     watch(
       () => props.isReaload,
       (load, prevLoad) => {

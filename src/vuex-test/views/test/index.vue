@@ -19,6 +19,7 @@
             <a-menu-item key="52"><router-link :to="{name:'indexDB2'}">indexDB2</router-link></a-menu-item>
             <a-menu-item key="53"><router-link :to="{name:'localStorage'}">localStorage</router-link></a-menu-item>
             <a-menu-item key="54"><router-link :to="{name:'sessionStorage'}">sessionStorage</router-link></a-menu-item>
+            <a-menu-item key="55"><router-link :to="{name:'vuex'}">vuex</router-link></a-menu-item>
           </a-sub-menu>
         </a-menu>
       </div>

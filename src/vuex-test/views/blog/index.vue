@@ -1,13 +1,13 @@
 <template>
   <div>
-    博客演示
+    <!--博客演示-->
     <router-view></router-view>
   </div>
 </template>
 
 <script>
 import { ref } from 'vue'
-import { myIndexedDB } from '../../store/indexedDB.js'
+// import { myIndexedDB } from '../../store/indexedDB.js'
 
 // 建立表结构等
 export default {
@@ -15,12 +15,14 @@ export default {
   components: {
   },
   setup () {
-    const { dbOpen } = myIndexedDB()
+    console.log('demo-blog - setup')
+    // const { dbOpen } = myIndexedDB()
+    console.log('demo-blog - setup - dbOpen -end')
     const myTest = ref('avi')
     const openKeys = ref(['sub2'])
 
     // 初始化
-    dbOpen()
+    // dbOpen()
 
     const handleClick = (e) => {
       console.log('click', e)

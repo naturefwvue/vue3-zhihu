@@ -41,6 +41,12 @@ const routes = [
         name: 'sessionStorage',
         meta: { title: 'sessionStorage 的演示' },
         component: () => import('../views/test/sessionStorage.vue')
+      },
+      {
+        path: 'vuex',
+        name: 'vuex',
+        meta: { title: 'vuex 的演示' },
+        component: () => import('../views/test/vuex.vue')
       }
     ]
   },

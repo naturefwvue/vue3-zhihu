@@ -31,6 +31,7 @@ export default {
   },
   setup (props, ctx) {
     const { getObjectByStore } = myIndexedDB()
+    console.log('blog-list - setup')
     const blogList = ref([])
     getObjectByStore('blog').then((data) => {
       blogList.value = data

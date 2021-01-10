@@ -1,4 +1,5 @@
 
+import { isRef, isReactive, toRaw } from 'vue'
 import { config } from './indexedDB.config.js'
 
 export function myIndexedDB () {
@@ -20,19 +21,22 @@ export function myIndexedDB () {
   let db // 内部保存的 indexed数据库
 
   /**
-  * 打开indexedDb数据库
+  * 打开indexedDb数据库。
+  * dbName：数据库名称；
+  * version：数据库版本。
+  * 可以不传值。
   */
   const dbOpen = (dbName, version) => {
     // 创建数据库，并且打开
     const name = config.dbName || dbName
     const ver = config.ver || version
     const dbRequest = myDB.open(name, ver)
-    // 记录数据库是否变更
+    // 记录数据库版本是否变更
     let isChange = false
     /* 该域中的数据库myIndex */
     console.log('dbRequest - 打开indexedDb数据库：', dbRequest)
 
-    // 数据库的 prpmise
+    // 打开数据库的 prpmise
     const dbPromise = new Promise((resolve, reject) => {
       // 数据库打开成功的回调
       dbRequest.onsuccess = function (event) {
@@ -80,7 +84,7 @@ export function myIndexedDB () {
   }
 
   /**
-  * 添加初始数据
+  * 设置初始数据
   */
   const setup = () => {
     // 定义一个 Promise 的实例
@@ -90,13 +94,12 @@ export function myIndexedDB () {
       for (const key in config.objects) {
         arrStore.push(key)
       }
-      console.log('arrStore', arrStore)
+      console.log('setup - arrStore', arrStore)
       const tranRequest = db.transaction(arrStore, 'readwrite')
 
       // 遍历，添加数据（对象）
       for (const key in config.objects) {
         const objectArror = config.objects[key]
-        console.log('objectArror', objectArror)
         const store = tranRequest.objectStore(key)
         // 清空数据
         store.clear().onsuccess = (event) => {
@@ -114,7 +117,7 @@ export function myIndexedDB () {
       // 遍历后统一返回
       tranRequest.oncomplete = (event) => {
         // tranRequest.commit()
-        console.log('oncomplete')
+        console.log('setup - oncomplete')
         resolve()
       }
       tranRequest.onerror = function (event) {
@@ -125,25 +128,44 @@ export function myIndexedDB () {
   }
 
   /**
-  * 添加对象。objectName：对象库名；object：要添加的对象
+  * 把vue的ref对象、reactive对象转换成原始对象
+  */
+  const _vueToObject = (vueObject) => {
+    let _object = vueObject
+    if (isRef(_object)) {
+      // 如果是 vue 的 ref 类型，替换成 ref.value
+      _object = _object.value
+    }
+    if (isReactive(_object)) {
+      // 如果是 vue 的 reactive 类型，那么获取原型，否则会报错
+      _object = toRaw(_object)
+    }
+    return _object
+  }
+
+  /**
+  * 添加对象。
+  * objectName：对象库名；
+  * object：要添加的对象
   */
   const addObject = (objectName, object) => {
+    const _object = _vueToObject(object)
     // 定义一个 Promise 的实例
     const objectPromise = new Promise((resolve, reject) => {
       // 定义个函数，便于调用
       const _addObject = () => {
         const tranRequest = db.transaction(objectName, 'readwrite')
         tranRequest
-          .objectStore(objectName)
-          .add(object)
-          .onsuccess = (event) => {
+          .objectStore(objectName) // 获取store
+          .add(_object) // 添加对象
+          .onsuccess = (event) => { // 成功后的回调
             resolve(event.target.result) // 返回对象的ID
           }
-        //
+        // 事务完成
         tranRequest.oncomplete = (event) => {
           console.log('addObject -- oncomplete')
           // tranRequest.commit()
-          resolve()
+          // resolve()
         }
         tranRequest.onerror = function (event) {
           reject(event)
@@ -163,59 +185,103 @@ export function myIndexedDB () {
   }
 
   /**
-  * 修改对象
+  * 修改对象。
+  * objectName：对象库名；
+  * object：要修改的对象
   */
   const updateObject = (objectName, object) => {
+    const _object = _vueToObject(object)
+    // 定义一个 Promise 的实例
     const objectPromise = new Promise((resolve, reject) => {
-      const tranRequest = db.transaction(objectName, 'readwrite')
-      tranRequest
-        .objectStore(objectName)
-        .put(object)
-        .onsuccess = (event) => {
-          // tranRequest.commit()
-          resolve(event.target.result)
+      // 定义个函数，便于调用
+      const _updateObject = () => {
+        const tranRequest = db.transaction(objectName, 'readwrite')
+        tranRequest
+          .objectStore(objectName) // 获取store
+          .put(_object) // 修改对象
+          .onsuccess = (event) => { // 成功后的回调
+            // tranRequest.commit()
+            resolve(event.target.result)
+          }
+        tranRequest.onerror = function (event) {
+          reject(event)
         }
-      tranRequest.onerror = function (event) {
-        reject(event)
+      }
+      // 判断数据库是否打开
+      if (typeof db === 'undefined') {
+        dbOpen().then(() => {
+          _updateObject()
+        })
+      } else {
+        _updateObject()
       }
     })
     return objectPromise
   }
 
   /**
-  * 依据id删除对象
+  * 依据id删除对象。
+  * objectName：对象库名；
+  * id：要删除的对象的key值，注意类型要准确。
   */
   const deleteObject = (objectName, id) => {
+    // 定义一个 Promise 的实例
     const objectPromise = new Promise((resolve, reject) => {
-      const tranRequest = db.transaction(objectName, 'readwrite')
-      tranRequest
-        .objectStore(objectName)
-        .delete(id)
-        .onsuccess = (event) => {
-          // tranRequest.commit()
-          resolve(event.target.result)
+      // 定义个函数，便于调用
+      const _deleteObject = () => {
+        const tranRequest = db.transaction(objectName, 'readwrite')
+        tranRequest
+          .objectStore(objectName) // 获取store
+          .delete(id) // 删除一个对象
+          .onsuccess = (event) => { // 成功后的回调
+            // tranRequest.commit()
+            resolve(event.target.result)
+          }
+        tranRequest.onerror = function (event) {
+          reject(event)
         }
-      tranRequest.onerror = function (event) {
-        reject(event)
+      }
+      // 判断数据库是否打开
+      if (typeof db === 'undefined') {
+        dbOpen().then(() => {
+          _deleteObject()
+        })
+      } else {
+        _deleteObject()
       }
     })
     return objectPromise
   }
 
   /**
-  * 依据id 获取对象
+  * 获取对象。
+  * objectName：对象库名；
+  * id：要获取的对象的key值，注意类型要准确，只能取一个。
+  * 如果不设置id，会返回store里的全部对象
   */
   const getObject = (objectName, id) => {
     const objectPromise = new Promise((resolve, reject) => {
       const _getObject = () => {
         const tranRequest = db.transaction(objectName, 'readonly')
-        tranRequest
-          .objectStore(objectName)
-          .get(id)
-          .onsuccess = (event) => {
-            console.log('getObject -- onsuccess- event:', event)
-            resolve(event.target.result)
-          }
+        if (typeof id === 'undefined') {
+          // 获取store里的全部对象
+          tranRequest
+            .objectStore(objectName) // 获取store
+            .getAll() // 获取全部对象
+            .onsuccess = (event) => { // 成功后的回调
+              console.log('getObject -- onsuccess- event:', event)
+              resolve(event.target.result) // 返回对象
+            }
+        } else {
+          // 按照id获取对象
+          tranRequest
+            .objectStore(objectName) // 获取store
+            .get(id) // 获取对象
+            .onsuccess = (event) => { // 成功后的回调
+              console.log('getObject -- onsuccess- event:', event)
+              resolve(event.target.result) // 返回对象
+            }
+        }
 
         tranRequest.oncomplete = (event) => {
           console.log('getObject -- oncomplete')
@@ -238,10 +304,43 @@ export function myIndexedDB () {
     return objectPromise
   }
 
+  /*
+  // index === value
+  // 仅匹配 "Donna"
+  var singleKeyRange = IDBKeyRange.only("Donna");
+
+  // index >= value
+  // 匹配所有超过“Bill”的，包括“Bill”
+  var lowerBoundKeyRange = IDBKeyRange.lowerBound("Bill");
+
+  // index > value
+  // 匹配所有超过“Bill”的，但不包括“Bill”
+  var lowerBoundOpenKeyRange = IDBKeyRange.lowerBound("Bill", true);
+
+  // index < value
+  // 匹配所有不超过“Donna”的，但不包括“Donna”
+  var upperBoundOpenKeyRange = IDBKeyRange.upperBound("Donna", true);
+
+  // index between value1 and value2
+  // 匹配所有在“Bill”和“Donna”之间的，但不包括“Donna”
+  var boundKeyRange = IDBKeyRange.bound("Bill", "Donna", false, true);
+
+  // 使用其中的一个键范围，把它作为 openCursor()/openKeyCursor 的第一个参数
+  index.openCursor(boundKeyRange).onsuccess = function(event) {
+    var cursor = event.target.result;
+    if (cursor) {
+      // 当匹配时进行一些操作
+      cursor.continue();
+    }
+  };
+  */
+
   /**
-  * 获取 对象仓库里的所有 对象，使用游标<br>
-  * start 开始位置/r
-  * count 获取数量，0表示获取全部\r
+  * 获取 对象仓库 里的所有的对象，使用游标实现，可以分页，暂时不支持查询。
+  * objectName：对象库名称。
+  * start：开始位置
+  * count：获取数量，0表示获取全部\r
+  * description：排序方式，prev倒序
   */
   const getObjectByStore = (objectName, count, start, description) => {
     const _start = start || 0
@@ -384,9 +483,87 @@ export function myIndexedDB () {
     })
     return objectPromise
   }
-  // 清空store里的所有对象
-  // 删除整个store
-  // 删除数据库
+
+  /**
+  * 清空store里的所有对象
+  * storeName：对象仓库名；
+  */
+  const clearStore = (storeName) => {
+    // 定义一个 Promise 的实例
+    const objectPromise = new Promise((resolve, reject) => {
+      // 定义个函数，便于调用
+      const _clearStore = () => {
+        const tranRequest = db.transaction(storeName, 'readwrite')
+        tranRequest
+          .objectStore(storeName) // 获取store
+          .clear() // 清空对象仓库里的对象
+          .onsuccess = (event) => { // 成功后的回调
+            // tranRequest.commit()
+            resolve(event)
+          }
+        tranRequest.onerror = function (event) {
+          reject(event)
+        }
+      }
+      // 判断数据库是否打开
+      if (typeof db === 'undefined') {
+        dbOpen().then(() => {
+          _clearStore()
+        })
+      } else {
+        _clearStore()
+      }
+    })
+    return objectPromise
+  }
+
+  /**
+  * 删除整个store
+  * storeName：对象仓库名；
+  */
+  const deleteStore = (storeName) => {
+    // 定义一个 Promise 的实例
+    const objectPromise = new Promise((resolve, reject) => {
+      // 定义个函数，便于调用
+      const _deleteStore = () => {
+        const tranRequest = db.transaction(storeName, 'readwrite')
+        tranRequest
+          .objectStore(storeName) // 获取store
+          .delete() // 清空对象仓库里的对象
+          .onsuccess = (event) => { // 成功后的回调
+            // tranRequest.commit()
+            resolve(event)
+          }
+        tranRequest.onerror = function (event) {
+          reject(event)
+        }
+      }
+      // 判断数据库是否打开
+      if (typeof db === 'undefined') {
+        dbOpen().then(() => {
+          _deleteStore()
+        })
+      } else {
+        _deleteStore()
+      }
+    })
+    return objectPromise
+  }
+
+  /**
+  * 删除数据库
+  * dbName：数据库名；
+  */
+  const deleteDB = (dbName) => {
+    // 定义一个 Promise 的实例
+    const objectPromise = new Promise((resolve, reject) => {
+      // 删掉整个数据库
+      myDB.deleteDatabase(dbName).onsuccess = (event) => {
+        resolve(event)
+      }
+    })
+    return objectPromise
+  }
 
   return {
     dbOpen, // 打开数据库的Promise
@@ -397,6 +574,9 @@ export function myIndexedDB () {
     getObject, // 获取对象的Promise
     getObjectByStore, // 获取表里的全部数据
     getObjectByIndex, // 通过索引获取对象的Promise
+    clearStore, // 清空对象仓库里的所有对象的Promise
+    deleteStore, // 删掉对象仓库
+    deleteDB, // 删除数据库
     findObjectByIndex
   }
 }
