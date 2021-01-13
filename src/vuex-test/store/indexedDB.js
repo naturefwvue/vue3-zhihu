@@ -440,6 +440,9 @@ export function myIndexedDB () {
     const _end = _start + _count
     const _description = description || IDBCursor.prev // 默认倒序
 
+    // 查询条件
+    const keyRange = IDBKeyRange.only(id)
+
     const objectPromise = new Promise((resolve, reject) => {
       // 定义个函数，便于调用
       const _findObjectByIndex = () => {
@@ -449,7 +452,7 @@ export function myIndexedDB () {
         const cursorRequest = tranRequest
           .objectStore(objectName)
           .index(indexName)
-          .openCursor(null, _description)
+          .openCursor(keyRange, _description)
 
         cursorRequest.onsuccess = (event) => {
           const cursor = event.target.result

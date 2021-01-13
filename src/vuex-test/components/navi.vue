@@ -4,6 +4,7 @@
     <router-link to="/">首页</router-link> |
     <router-link :to="{name:'demo'}">演示</router-link> |
     <router-link :to="{name:'list'}">博客</router-link> |
+    <router-link :to="{name:'list2'}">博客2</router-link> |
   </div>
 </template>
 

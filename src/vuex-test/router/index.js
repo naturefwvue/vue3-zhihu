@@ -75,6 +75,32 @@ const routes = [
         component: () => import('../components/blog/blog-form.vue')
       }
     ]
+  },
+  {
+    path: '/blog2',
+    name: 'blog2',
+    component: () => import('../views/blog2/index.vue'),
+    children: [
+      {
+        path: 'list',
+        name: 'list2',
+        meta: { title: '博客列表' },
+        component: () => import('../components/blog2/blog-list.vue')
+      },
+      {
+        path: ':blogId',
+        name: 'blogInfo2',
+        props: true,
+        meta: { title: '博文和讨论' },
+        component: () => import('../components/blog2/blog-info.vue')
+      },
+      {
+        path: 'write',
+        name: 'write2',
+        meta: { title: '写博客列表' },
+        component: () => import('../components/blog2/blog-form.vue')
+      }
+    ]
   }
 ]
 
