@@ -3,8 +3,10 @@
   <span @click="showForm" style="cursor: pointer;">写博客</span>
   <a-modal
     v-model:visible="visible"
-    title="Basic Modal"
-    @ok="handleOk">
+    title="添加博文"
+    mask="false"
+    @ok="handleOk"
+    @cancel="handleCancel">
       <a-row>
         <a-col :span="4">标题：</a-col>
         <a-col :span="14">
@@ -30,7 +32,7 @@
         <a-col :span="4">简介：</a-col>
         <a-col :span="14">
           <a-textarea
-            :autosize="{ minRows: 2, maxRows: 4}"
+            :autoSize="{ minRows: 2, maxRows: 4}"
             placeholder="请输入简介"
             v-model:value="blogForm.introduction"/>
         </a-col>
@@ -39,7 +41,7 @@
         <a-col :span="4">内容：</a-col>
         <a-col :span="14">
           <a-textarea
-            :autosize="{ minRows: 10, maxRows: 40}"
+            :autoSize="{ minRows: 10, maxRows: 40}"
             placeholder="请输入内容"
             v-model:value="blogForm.concent"/>
         </a-col>
@@ -53,7 +55,7 @@
 <script>
 // import { BellOutlined } from '@ant-design/icons-vue'
 import { reactive, ref } from 'vue'
-import { myIndexedDB } from '../../store/indexedDB.js'
+import mapBlogAction from '../../store/myMap.js'
 
 // 博文表单
 const blogForm = reactive(
@@ -72,18 +74,25 @@ export default {
     blog: Object
   },
   setup (props, ctx) {
-    const { getObjectByStore, addObject } = myIndexedDB()
-    // 获取分组对象
-    const groupList = ref({})
-    getObjectByStore('group').then((data) => {
-      groupList.value = data
-    })
+    const {
+      getIsOpenBlogForm,
+      setIsOpenBlogForm,
+      getGroupList,
+      addBlog
+    } = mapBlogAction()
+
+    // 显示表单的状态
+    const visible = getIsOpenBlogForm()
+
+    // 获取分组列表
+    const groupList = getGroupList()
+
     // 获取博文信息，用于绑定表单
     // 添加博文
     const handleOk = (e) => {
       confirmLoading.value = true
       blogForm.id = new Date().valueOf()
-      addObject('blog', blogForm).then((id) => {
+      addBlog(blogForm).then((id) => {
         console.log(id)
         confirmLoading.value = false
         // ctx.emit('update:isShow', false)
@@ -92,17 +101,20 @@ export default {
     }
     // 提交状态
     const confirmLoading = ref(false)
-    // 显示表单的状态
-    const visible = ref(false)
 
     // 显示表单
     const showForm = () => {
-      visible.value = true
+      setIsOpenBlogForm(true)
+      setTimeout(() => {
+        // const title = window.document.getElementById('rcDialogTitle3')
+        const title = document.getElementsByClassName('ant-modal-title')
+        console.log('title', title)
+      }, 1000)
     }
 
     const handleCancel = () => {
-      alert('取消')
-      visible.value = false
+      // alert('取消')
+      setIsOpenBlogForm(false)
     }
 
     return {

@@ -348,6 +348,7 @@ export function myIndexedDB () {
     const _end = _start + _count
     const _description = description || 'prev' // 默认倒序
     console.log('getObjectByStore-db:', db)
+    console.log(`_start:${_start}-_count:${_count}-_end:${_end}`)
 
     const objectPromise = new Promise((resolve, reject) => {
       // 定义个函数，便于调用
@@ -366,6 +367,7 @@ export function myIndexedDB () {
           if (cursor) {
             if (_end === 0 || (cursorIndex >= _start && cursorIndex < _end)) {
               dataList.push(cursor.value)
+              console.log(cursorIndex)
             }
             cursorIndex++
             cursor.continue()

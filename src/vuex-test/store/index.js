@@ -1,6 +1,7 @@
 import { createStore } from 'vuex'
 import { myIndexedDB } from './indexedDB.js'
 
+// 访问 IndexedDB 数据库
 const {
   addObject,
   getObjectByStore,
@@ -21,6 +22,11 @@ export default createStore({
   },
   // get
   getters: {
+    // 获取博文表单是否显示
+    getIsOpenBlogForm (state) {
+      return state.isOpenBlogForm
+    },
+
     // 获取博文分组列表
     getGroupList (state) {
       if (state.blog.length === 0) {
@@ -32,14 +38,16 @@ export default createStore({
       }
       return state.group
     },
+
     // 获取博文分组数量
     getGroupCount (state) {
       return state.group.length
     },
+
     // 获取博文列表
     getBlogList: (state) => {
       if (state.blog.length === 0) {
-        getObjectByStore('blog').then((data) => {
+        getObjectByStore('blog', 5, 0).then((data) => {
           data.forEach(element => {
             state.blog.push(element)
           })
@@ -82,12 +90,29 @@ export default createStore({
   },
   // set，不能异步，其实也不是不可以。
   mutations: {
+    // 添加、修改博文
     setBlog (state, blog) {
-      state.blog.push(blog)
+      state.blog.unshift(blog)
     },
+    // 添加讨论
     setDiscuess (state, discuess) {
       state.discuess.push(discuess)
     },
+    // 设置博文表单的开关
+    setIsOpenBlogForm (state, bool) {
+      state.isOpenBlogForm = bool
+    },
+    // 博文列表的分页
+    pageBlogList (state, pageInfo) {
+      const wz = (pageInfo.current - 1) * pageInfo.pageSize
+      getObjectByStore('blog', pageInfo.pageSize, wz).then((data) => {
+        state.blog.length = 0
+        data.forEach(element => {
+          state.blog.push(element)
+        })
+      })
+    },
+    // 测试
     increment (state, value = 1) {
       state.count += value
       // 尝试一下 mutations 的异步操作

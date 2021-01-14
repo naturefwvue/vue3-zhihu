@@ -21,7 +21,8 @@
 <script>
 import { ref } from 'vue'
 // import { BellOutlined } from '@ant-design/icons-vue'
-import { vueLife } from '../views/js/vue-life.js'
+import mapBlogAction from '../../store/myMap.js'
+
 // 查询博文
 // 显示博文分组
 // 分组显示博文列表的事件
@@ -29,11 +30,14 @@ import { vueLife } from '../views/js/vue-life.js'
 export default {
   name: 'blog-find',
   props: {
-    groupList: Array
   },
   setup (props, ctx) {
-    vueLife('blog-find')
+    const {
+      getGroupList
+    } = mapBlogAction()
 
+    // 获取分组列表
+    const groupList = getGroupList()
     const value = ref('')
 
     // 查询
@@ -43,6 +47,7 @@ export default {
 
     return {
       findBlog,
+      groupList,
       value
     }
   }
