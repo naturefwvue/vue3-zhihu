@@ -1,8 +1,7 @@
 <!--博文表单-->
-<template>
-  <span @click="showForm" style="cursor: pointer;">写博客</span>
+<template>{{blogFormState}}
   <a-modal
-    v-model:visible="visible"
+    v-model:visible="blogFormState.isOpen"
     title="添加博文"
     mask="false"
     @ok="handleOk"
@@ -54,7 +53,7 @@
 
 <script>
 // import { BellOutlined } from '@ant-design/icons-vue'
-import { reactive, ref } from 'vue'
+import { onMounted, onUpdated, reactive, ref, watch } from 'vue'
 import mapBlogAction from '../../store/myMap.js'
 
 // 博文表单
@@ -75,17 +74,48 @@ export default {
   },
   setup (props, ctx) {
     const {
-      getIsOpenBlogForm,
-      setIsOpenBlogForm,
+      getBlogFormState,
+      closeBlogForm,
       getGroupList,
-      addBlog
+      addBlog,
+      getBlog
     } = mapBlogAction()
 
     // 显示表单的状态
-    const visible = getIsOpenBlogForm()
+    const blogFormState = getBlogFormState()
 
     // 获取分组列表
     const groupList = getGroupList()
+
+    // 获取博文内容
+    const blogInfo = getBlog()
+    console.log('blogInfo', blogInfo)
+    onUpdated(() => { alert('onUpdated') })
+    onMounted(() => { alert('onMounted') })
+
+    alert(blogFormState.editState)
+    watch(() => blogFormState.editState,
+      (a, b) => {
+        if (blogFormState.editState === 'update') {
+          const blogInfo = getBlog()
+          console.log('blogInfo', blogInfo)
+          blogForm.title = blogInfo.title
+          blogForm.groupId = blogInfo.groupId
+          blogForm.introduction = blogInfo.introduction
+          blogForm.concent = blogInfo.concent
+          blogForm.id = blogInfo.id
+        } else {
+          blogForm.title = ''
+          blogForm.groupId = null
+          blogForm.introduction = ''
+          blogForm.concent = ''
+          blogForm.id = 0
+        }
+      }
+    )
+
+    // 提交状态
+    const confirmLoading = ref(false)
 
     // 获取博文信息，用于绑定表单
     // 添加博文
@@ -95,33 +125,18 @@ export default {
       addBlog(blogForm).then((id) => {
         console.log(id)
         confirmLoading.value = false
-        // ctx.emit('update:isShow', false)
-        ctx.emit('submitblog', blogForm)
       })
-    }
-    // 提交状态
-    const confirmLoading = ref(false)
-
-    // 显示表单
-    const showForm = () => {
-      setIsOpenBlogForm(true)
-      setTimeout(() => {
-        // const title = window.document.getElementById('rcDialogTitle3')
-        const title = document.getElementsByClassName('ant-modal-title')
-        console.log('title', title)
-      }, 1000)
     }
 
     const handleCancel = () => {
       // alert('取消')
-      setIsOpenBlogForm(false)
+      closeBlogForm()
     }
 
     return {
       groupList, // 分组列表
       confirmLoading,
-      visible,
-      showForm,
+      blogFormState,
       handleOk,
       handleCancel,
       blogForm

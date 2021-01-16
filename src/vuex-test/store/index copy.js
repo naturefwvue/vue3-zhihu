@@ -1,126 +1,119 @@
-import { reactive } from 'vue'
+/** 备份 */
+import { reactive, ref } from 'vue'
 import { createStore } from 'vuex'
 import { myIndexedDB } from './indexedDB.js'
 
 // 访问 IndexedDB 数据库
 const {
   addObject,
-  getObject,
   getObjectByStore,
   findObjectByIndex
 } = myIndexedDB()
 
 export default createStore({
   state: {
-    groupList: reactive([]), // 博文分组列表
-    blogList: reactive([]), // 当前分页的博文列表
-    discuessList: reactive([]), // 当前博文的讨论列表
-    blog: reactive({}), // 当前博文内容
-    blogConfig: reactive({
-      currentPage: 0,
-      pageSize: 5
-    }),
-    blogFormState: reactive({
-      isOpen: false, // isOpenBlogForm 是否显示添加博文的表单
-      editState: 'add', // add 编写中；uploade：修改中；end：完毕
-      blogId: 1 // 当前博文的ID
-    }),
+    myReactive: reactive({ aa: 'aa' }),
+    myRefNumber: ref(1),
+    myRefObject: ref({ bb: 'aa' }),
+    count: 0,
+    isLoadingDiscuss: false, // 加载中
+    isOpenBlogForm: false, // 是否显示添加博文的表单
+    blogFormState: 'writing', // writing 编写中；uploading：修改中；end：完毕
+    group: [], // 博文分组列表
+    blog: [], // 博文列表
+    currentBlogId: 1, // 当前博文的ID
+    discuess: [], // 讨论列表
     myPromies: () => {} // mutations 的异步操作
   },
   // get
   getters: {
+    // 获取博文表单是否显示
+    getIsOpenBlogForm (state) {
+      return state.isOpenBlogForm
+    },
+
     // 获取博文分组列表
-    // 检查state里有没有，没有加载，有的话直接返回
     getGroupList (state) {
-      if (state.groupList.length === 0) {
+      if (state.blog.length === 0) {
         getObjectByStore('group').then((data) => {
           data.forEach(element => {
-            state.groupList.push(element)
+            state.group.push(element)
           })
         })
       }
-      return state.groupList
-    },
-
-    // 获取当前页的博文列表
-    // 检查state里有没有，没有加载第一页，有的话直接返回
-    getBlogList: (state) => {
-      if (state.blogList.length === 0) {
-        getObjectByStore('blog', state.blogConfig.pageSize, 0).then((data) => {
-          data.forEach(element => {
-            state.blogList.push(element)
-          })
-        })
-      }
-      return state.blogList
-    },
-
-    // 获取当前博文内容
-    // 检查state里有没有，没有加载，有的话直接返回
-    getBlog: (state) => {
-      getObject('blog', state.blogFormState.blogId).then((data) => {
-        state.blog = data
-      })
-      return state.blog
-    },
-
-    // 获取当前博文的讨论列表
-    getDicuessList: (state) => (blogId) => {
-      const promise = new Promise((resolve, reject) => {
-        if (state.currentBlogId !== blogId) {
-          findObjectByIndex('discuess', 'blogId', parseInt(blogId)).then((data) => {
-            state.discuessList.length = 0 // 清空之前的记录
-            data.forEach(element => {
-              state.discuessList.push(element)
-            })
-            state.currentBlogId = blogId
-            resolve(state.discuessList)
-          })
-        } else {
-          resolve(state.discuessList)
-        }
-      })
-      state.myPromies = promise // 模拟一下异步
-      return state.discuessList
-    },
-
-    // 获取博文表单是否显示
-    getBlogFormState (state) {
-      return state.blogFormState
+      return state.group
     },
 
     // 获取博文分组数量
     getGroupCount (state) {
       return state.group.length
+    },
+
+    // 获取博文列表
+    getBlogList: (state) => {
+      if (state.blog.length === 0) {
+        getObjectByStore('blog', 5, 0).then((data) => {
+          data.forEach(element => {
+            state.blog.push(element)
+          })
+        })
+      }
+      return state.blog
+    },
+    // 获取博文的讨论列表
+    getDicuessList: (state) => (blogId) => {
+      const promise = new Promise((resolve, reject) => {
+        if (state.currentBlogId !== blogId) {
+          findObjectByIndex('discuess', 'blogId', parseInt(blogId)).then((data) => {
+            state.discuess.length = 0 // 清空之前的记录
+            data.forEach(element => {
+              state.discuess.push(element)
+            })
+            state.currentBlogId = blogId
+            resolve(state.discuess)
+          })
+        } else {
+          resolve(state.discuess)
+        }
+      })
+      state.myPromies = promise
+      return state.discuess
+    },
+    getBlogListByGroup (state, groupId) {
+      return state.blog.filter((item) => item.groupId === groupId)
+    },
+    getBlogById (state) {
+      return state.blog
+    },
+    getTodoById: (state) => (id) => {
+      return state.count
+    },
+    getCount (state) {
+      console.log('getters-getMyRef', state.myRef)
+      return state.count
     }
   },
-
   // set，不能异步，其实也不是不可以。
   mutations: {
     // 添加、修改博文
     setBlog (state, blog) {
-      state.blogList.unshift(blog)
+      state.blog.unshift(blog)
     },
     // 添加讨论
     setDiscuess (state, discuess) {
-      state.discuessList.push(discuess)
+      state.discuess.push(discuess)
     },
     // 设置博文表单的开关
-    setBlogFormIsOpen (state, bool) {
-      state.blogFormState.isOpen = bool
-    },
-    // 设置博文表单的编辑状态
-    setBlogFormEditState (state, s) {
-      state.blogFormState.blogId = s.blogId
-      state.blogFormState.editState = s.editState
+    setIsOpenBlogForm (state, bool) {
+      state.isOpenBlogForm = bool
     },
     // 博文列表的分页
     pageBlogList (state, pageInfo) {
       const wz = (pageInfo.current - 1) * pageInfo.pageSize
       getObjectByStore('blog', pageInfo.pageSize, wz).then((data) => {
-        state.blogList.length = 0
+        state.blog.length = 0
         data.forEach(element => {
-          state.blogList.push(element)
+          state.blog.push(element)
         })
       })
     },
@@ -182,6 +175,14 @@ export default createStore({
         })
       })
       return promise
+    },
+    add1 (state, value = 1) {
+      state.count += value
+      // 尝试一下 mutations 的异步操作
+      const pp = new Promise((resolve, reject) => {
+        resolve(this.state.count)
+      })
+      return pp
     }
   },
   modules: {
