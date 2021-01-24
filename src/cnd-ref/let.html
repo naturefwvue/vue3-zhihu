@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>ES 6 的let</title>
+    <script src="js/vue.global.js"></script>
+  </head>
+  <body>
+    <div id="app">
+     let 的测试
+    </div>
+
+  <script type="text/javascript">
+    const vueComposition = {
+      // reactive 的测试
+      setup () {
+        let person = Vue.reactive({name: 'nature'})
+        console.log(person)
+        console.log(person.set)
+
+        // 变更对象的测试
+        const changeObject = () => {
+          person = Vue.reactive({name: 'jyk'})
+          console.log(person)
+        }
+
+        return {
+          person,
+          changeObject
+        }
+      }
+    }
+    const vmBlog = Vue.createApp(vueComposition).mount('#app')
+  </script>
+</body>
+</html>

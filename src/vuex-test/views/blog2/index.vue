@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!--博客演示-->
+    <!--博客演示-->{{blog}}
     <a-button type="" @click="writeBlog">写博客</a-button>
     <formBlog/>
     <!--博文列表、博文详细 + 讨论列表 + 讨论表单-->
@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { provide, reactive } from 'vue'
 import formBlog from '../../components/blog2/blog-form'
 import mapBlogAction from '../../store/myMap.js'
 
@@ -27,8 +28,16 @@ export default {
       openBlogForm()
     }
 
+    // 定义
+    const blog = reactive({
+      title: 'aaa'
+    })
+    provide('blog', blog)
+    console.log('parentBlog', blog)
+
     return {
-      writeBlog
+      writeBlog,
+      blog
     }
   }
 }

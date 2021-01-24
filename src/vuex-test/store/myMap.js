@@ -44,7 +44,9 @@ const mapBlogAction = () => {
   /**
     * 获取博文
   */
-  const getBlog = () => store.dispatch('getBlog')
+  const getBlog = () => {
+    return store.getters.getBlog
+  }
 
   /**
   * 获取博文表单状态 reactive 类型

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>reactive的测试</title>
+    <script src="js/vue.global.js"></script>
+  </head>
+  <body>
+    <div id="app"><!--
+      引用类型 的测试：{{person}}<br>
+      基础类型 的测试：{{simple}}<br> simple2
+      数组类型 的测试：{{arr}}<br>-->
+      <input type="button" value="改变对象属性" @click="changeObject"/><br>
+      <input type="button" value="改变值" @click="changeSimple"/><br>
+      <input type="button" value="改变数组" @click="changeArr"/><br>
+      return 的组合类型 refList：{{refList}}<br>
+      return 的组合类型 _value：{{refList.arr._value}}<br>
+      return 的组合类型 arr2：{{refList.arr2}}<br>
+      return 的组合类型 simple2：{{refList.simple2}}<br>
+
+    </div>
+
+  <script type="text/javascript">
+    const vueComposition = {
+      // reactive 的测试
+      setup () {
+        // 引用类型
+        const person = Vue.ref({
+          name: 'nature',
+          age: 18
+        })
+        console.log('person', person)
+
+        // 变更对象的测试
+        const changeObject = () => {
+          person.value.name = 'jyk'
+          person.value.education = '大专'
+        }
+
+        // 基础类型
+        const simple = Vue.ref('nature')
+        console.log('simple', simple)
+
+        // 变更基础类型的测试
+        const changeSimple = () => {
+          simple.value = 'jyk'
+        }
+
+        // 数组
+        const arr = Vue.ref(['aa'])
+        console.log('arr', arr)
+        // 变更数组的测试
+        const changeArr = () => {
+          arr.value.length = 0
+          setTimeout(() => {
+            arr.value.push('ddd')
+          },500)
+        }
+
+        return {
+          // person,
+          changeObject,
+          // simple,
+          changeSimple,
+          // arr,
+          changeArr,
+          refList: {
+            person,
+            simple,
+            arr,
+            arr2: arr.value,
+            simple2: simple.value
+          }
+        }
+      }
+    }
+    const vmBlog = Vue.createApp(vueComposition).mount('#app')
+  </script>
+</body>
+</html>

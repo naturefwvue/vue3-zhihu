@@ -15,7 +15,13 @@ export default createStore({
     groupList: reactive([]), // 博文分组列表
     blogList: reactive([]), // 当前分页的博文列表
     discuessList: reactive([]), // 当前博文的讨论列表
-    blog: reactive({}), // 当前博文内容
+    blog: reactive({
+      id: 1,
+      title: '',
+      groupId: null,
+      introduction: '',
+      concent: ''
+    }), // 当前博文内容
     blogConfig: reactive({
       currentPage: 0,
       pageSize: 5
@@ -59,7 +65,11 @@ export default createStore({
     // 检查state里有没有，没有加载，有的话直接返回
     getBlog: (state) => {
       getObject('blog', state.blogFormState.blogId).then((data) => {
-        state.blog = data
+        state.blog.id = data.id
+        state.blog.title = data.title
+        state.blog.groupId = data.groupId
+        state.blog.introduction = data.introduction
+        state.blog.concent = data.concent
       })
       return state.blog
     },
@@ -113,6 +123,16 @@ export default createStore({
     setBlogFormEditState (state, s) {
       state.blogFormState.blogId = s.blogId
       state.blogFormState.editState = s.editState
+      if (s.editState === 'update') {
+        // 加载对应的博文
+        getObject('blog', state.blogFormState.blogId).then((data) => {
+          state.blog.id = data.id
+          state.blog.title = data.title
+          state.blog.groupId = data.groupId
+          state.blog.introduction = data.introduction
+          state.blog.concent = data.concent
+        })
+      }
     },
     // 博文列表的分页
     pageBlogList (state, pageInfo) {
@@ -157,6 +177,23 @@ export default createStore({
         addObject('blog', newBlog).then((id) => {
           console.log(id)
           resolve(id)
+        })
+      })
+      return promise
+    },
+    // 获取当前博文内容
+    getCurrentBlog (state, s) {
+      state.blogFormState.blogId = s.blogId
+      state.blogFormState.editState = s.editState
+      const promise = new Promise((resolve, reject) => {
+        // 加载对应的博文
+        getObject('blog', state.blogFormState.blogId).then((data) => {
+          state.blog.id = data.id
+          state.blog.title = data.title
+          state.blog.groupId = data.groupId
+          state.blog.introduction = data.introduction
+          state.blog.concent = data.concent
+          resolve(data)
         })
       })
       return promise

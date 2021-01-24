@@ -53,10 +53,11 @@
 
 <script>
 // import { BellOutlined } from '@ant-design/icons-vue'
-import { onMounted, onUpdated, reactive, ref, watch } from 'vue'
+import { ref } from 'vue'
 import mapBlogAction from '../../store/myMap.js'
 
 // 博文表单
+/*
 const blogForm = reactive(
   {
     id: 1,
@@ -66,6 +67,7 @@ const blogForm = reactive(
     concent: '这是博客的详细内容<br>第二行'
   }
 )
+*/
 
 export default {
   name: 'blog-form',
@@ -88,32 +90,12 @@ export default {
     const groupList = getGroupList()
 
     // 获取博文内容
-    const blogInfo = getBlog()
-    console.log('blogInfo', blogInfo)
-    onUpdated(() => { alert('onUpdated') })
-    onMounted(() => { alert('onMounted') })
+    const blogForm = getBlog()
+    console.log('blogForm', blogForm)
+    // onUpdated(() => { alert('onUpdated') })
+    // onMounted(() => { alert('onMounted') })
 
-    alert(blogFormState.editState)
-    watch(() => blogFormState.editState,
-      (a, b) => {
-        if (blogFormState.editState === 'update') {
-          const blogInfo = getBlog()
-          console.log('blogInfo', blogInfo)
-          blogForm.title = blogInfo.title
-          blogForm.groupId = blogInfo.groupId
-          blogForm.introduction = blogInfo.introduction
-          blogForm.concent = blogInfo.concent
-          blogForm.id = blogInfo.id
-        } else {
-          blogForm.title = ''
-          blogForm.groupId = null
-          blogForm.introduction = ''
-          blogForm.concent = ''
-          blogForm.id = 0
-        }
-      }
-    )
-
+    // alert(blogFormState.editState)
     // 提交状态
     const confirmLoading = ref(false)
 

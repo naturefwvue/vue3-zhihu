@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>reactive的测试</title>
+    <script src="js/vue.global.js"></script>
+  </head>
+  <body>
+    <div id="app"><!---->
+      引用类型 person 的测试：{{person}}<br>
+      引用类型 person2 的测试：{{person2}}<br>
+      基础类型 的测试：{{simple}}<br>
+      数组类型 的测试：{{arr}}<br>
+      <input type="button" value="改变对象属性" @click="changeObject"/><br>
+      <input type="button" value="改变值" @click="changeSimple"/><br>
+      <input type="button" value="改变数组" @click="changeArr"/><br>
+      return 的组合类型reactiveList：{{reactiveList}}<br>
+
+    </div>
+
+  <script type="text/javascript">
+    const vueComposition = {
+      // reactive 的测试
+      setup () {
+        // 引用类型
+        const person = Vue.reactive({
+          name: 'nature',
+          age: 18
+        })
+        console.log('person', person) // Proxy 类型
+        console.log('isProxy', Vue.isProxy(person)) // 判断是不是 Proxy 类型，true
+        console.log('isProxy-toRaw', Vue.isProxy(Vue.toRaw(person))) // 原型不是 Proxy
+        console.log('isProxy-readonly', Vue.isProxy(Vue.readonly(person))) // readonly 也是 Proxy
+        console.log('isReactive', Vue.isReactive(person)) // 判断是不是 Reactive
+        console.log('isReadonly-false', Vue.isReadonly(person)) // false
+        console.log('isReadonly-true', Vue.isReadonly(Vue.readonly(person))) // true
+        console.log('Readonly-person', Vue.readonly(person)) // 打印看看
+ 
+        // 引用类型 的整体赋值
+        const person2 = Vue.reactive({
+          data: {
+            name: 'nature',
+            age: 18
+          }
+        })
+
+        // 变更对象的测试
+        const changeObject = () => {
+          person.name = 'jyk'
+          person.education = '大专'
+          person2.data = {
+            title: '整体赋值'
+          }
+        }
+
+        // 基础类型
+        const simple = Vue.reactive({
+          value: 'nature'
+        })
+        console.log('simple', simple)
+
+        // 变更基础类型的测试
+        const changeSimple = () => {
+          simple.value = 'jyk'
+        }
+
+        // 数组
+        const arr = Vue.reactive(['aa'])
+        console.log('arr', arr)
+        // 变更数组的测试
+        const changeArr = () => {
+          arr.length = 0
+          setTimeout(() => {
+            arr.push('ddd')
+          },500)
+        }
+
+        return {
+          person,
+          person2,
+          changeObject,
+          simple,
+          changeSimple,
+          arr,
+          changeArr,
+          reactiveList: {
+            person,
+            simple,
+            arr
+          }
+        }
+      }
+    }
+    const vmBlog = Vue.createApp(vueComposition).mount('#app')
+  </script>
+</body>
+</html>

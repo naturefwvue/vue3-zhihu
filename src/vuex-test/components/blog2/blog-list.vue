@@ -2,7 +2,7 @@
 <template>
   <div style="margin:0px auto;width:850px;">
     <!--博文列表-->
-    <router-link :to="{name:'write2'}">写博客</router-link>
+    <router-link :to="{name:'write2'}">写博客</router-link>{{parentBlog}}
     <a-pagination
       v-model:current="current"
       :pageSize="5"
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import mapBlogAction from '../../store/myMap.js'
 
 export default {
@@ -76,6 +76,7 @@ export default {
     const pageChange = (page, pageSize) => {
       console.log(page, pageSize)
       pageBlogList({ current: page, pageSize: pageSize })
+      parentBlog.title = page
     }
 
     // 添加博客，打开弹窗
@@ -84,13 +85,17 @@ export default {
       openBlogForm()
     }
 
+    const parentBlog = inject('blog')
+    console.log('parentBlog', parentBlog)
+
     return {
       blogList, // 博文列表
       current, // 当前页号
       pageChange, // 翻页事件
       updateBlog, // 准备修改博文
       agree,
-      dianzan
+      dianzan,
+      parentBlog
     }
   }
 
