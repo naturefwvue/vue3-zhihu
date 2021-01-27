@@ -4,16 +4,16 @@ import { useStore } from 'vuex'
 const mapBlogAction = () => {
   const store = useStore() // 引入 vuex
 
-  // 博文分组部分
+  // 博文分组部分==============================
 
   /**
     * 获取博文分组的列表 readonly reactive 类型
     */
   const getGroupList = () => {
-    return readonly(store.getters.getIsOpenBlogForm)
+    return readonly(store.getters.getGroupList)
   }
 
-  // 博文查询部分
+  // 博文查询部分==============================
 
   /**
    * 获取当前页号的博文列表，readonly reactive 类型
@@ -29,7 +29,7 @@ const mapBlogAction = () => {
     store.commit('pageBlogList', pageInfo)
   }
 
-  // 博文添加、修改、删除部分
+  // 博文添加、修改、删除部分==============================
 
   /**
    * 添加新博文
@@ -39,13 +39,13 @@ const mapBlogAction = () => {
   /**
     * 修改博文
   */
-  const updageBlog = (blog) => store.dispatch('updageBlog', blog)
+  const updateBlog = (blog) => store.dispatch('updateBlog', blog)
 
   /**
     * 获取博文
   */
   const getBlog = () => {
-    return store.getters.getBlog
+    return store.dispatch('getCurrentBlog')
   }
 
   /**
@@ -63,27 +63,20 @@ const mapBlogAction = () => {
   }
 
   /**
-   * 打开弹窗
-  */
-  const openBlogForm = () => {
-    store.commit('setBlogFormIsOpen', true)
-  }
-
-  /**
    * 准备添加博文
   */
   const readyAddBlog = () => {
-    store.commit('setBlogFormEditState', { editState: 'add', blogId: 0 })
+    store.commit('setBlogFormEditState', { editState: 'add', blogId: 0, isOpen: true })
   }
 
   /**
    * 准备修改博文
   */
   const readyUpdateBlog = (id) => {
-    store.commit('setBlogFormEditState', { editState: 'update', blogId: id })
+    store.commit('setBlogFormEditState', { editState: 'update', blogId: id, isOpen: true })
   }
 
-  // 讨论部分
+  // 讨论部分=================================
 
   /**
    * 获取当前博文的讨论列表 blogId:当前博文ID。readonly reactive 类型
@@ -104,11 +97,10 @@ const mapBlogAction = () => {
     getDiscussList, // 第一次获取讨论列表
     getBlogFormState, // 获取表单状态
     closeBlogForm, // 关闭弹窗
-    openBlogForm, // 打开弹窗
     readyAddBlog, // 准备添加博文
     readyUpdateBlog, // 准备修改博文
     addBlog, // 添加博文
-    updageBlog, // 修改博文
+    updateBlog, // 修改博文
     getBlog, // 获取博文内容
     addDiscuess // 添加讨论
   }

@@ -196,13 +196,32 @@ export function myIndexedDB () {
       // 定义个函数，便于调用
       const _updateObject = () => {
         const tranRequest = db.transaction(objectName, 'readwrite')
+        // 按照id获取对象
         tranRequest
           .objectStore(objectName) // 获取store
-          .put(_object) // 修改对象
+          .get(_object.id) // 获取对象
           .onsuccess = (event) => { // 成功后的回调
-            // tranRequest.commit()
-            resolve(event.target.result)
+            // resolve(event.target.result) // 返回对象
+            // 修改属性值
+            const new1 = { ...event.target.result, ..._object }
+            // const new1 = {}
+            // for (const key in old) {
+            //  new1[key] = old[key]
+            //  if (typeof _object[key] !== 'undefined') {
+            //    new1[key] = _object[key]
+            //  }
+            // }
+            // 修改数据
+            tranRequest
+              .objectStore(objectName) // 获取store
+              .put(new1) // 修改对象
+              .onsuccess = (event) => { // 成功后的回调
+                console.log('updateObject -- onsuccess- event:', event)
+                // tranRequest.commit()
+                resolve(event.target.result)
+              }
           }
+
         tranRequest.onerror = function (event) {
           reject(event)
         }

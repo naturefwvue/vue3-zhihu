@@ -1,19 +1,18 @@
 <!--博文列表-->
 <template>
-  <div style="margin:0px auto;width:850px;">
+  <div style="margin:0px auto;width:350px;">
     <!--博文列表-->
-    <router-link :to="{name:'write2'}">写博客</router-link>{{parentBlog}}
     <a-pagination
       v-model:current="current"
       :pageSize="5"
       :total="30"
       @change="pageChange"
       show-less-items
-    />{{ret}} {{refNumber}} myCount:{{$store.state.count}}
+    />
     <a-card
       v-for="(item,index) in blogList"
       :key="'bloglist'+index"
-      style="width:500px;margin: 5px;padding: 3px;"
+      style="width:400px;margin: 5px;padding: 3px;"
     >
         <template #title>
           <router-link
@@ -49,8 +48,7 @@ export default {
     const {
       getBlogList,
       pageBlogList,
-      readyUpdateBlog,
-      openBlogForm
+      readyUpdateBlog
     } = mapBlogAction()
 
     // 获取博文列表
@@ -79,10 +77,9 @@ export default {
       parentBlog.title = page
     }
 
-    // 添加博客，打开弹窗
+    // 修改博客，打开弹窗
     const updateBlog = (id) => {
       readyUpdateBlog(id)
-      openBlogForm()
     }
 
     const parentBlog = inject('blog')

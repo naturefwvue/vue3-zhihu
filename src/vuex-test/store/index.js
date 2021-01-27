@@ -6,6 +6,7 @@ import { myIndexedDB } from './indexedDB.js'
 const {
   addObject,
   getObject,
+  updateObject,
   getObjectByStore,
   findObjectByIndex
 } = myIndexedDB()
@@ -23,32 +24,38 @@ export default createStore({
       concent: ''
     }), // 当前博文内容
     blogConfig: reactive({
+      query: {
+        key: '', // 没有设置查询条件
+        groupId: 0 // 不按照分组查询
+      },
       currentPage: 0,
+      allCount: 100,
       pageSize: 5
     }),
     blogFormState: reactive({
-      isOpen: false, // isOpenBlogForm 是否显示添加博文的表单
-      editState: 'add', // add 编写中；uploade：修改中；end：完毕
+      isOpen: false, // 是否显示添加、修改博文的表单 isOpenBlogForm
+      editState: 'add', // add 添加新博文；update：修改博文；end：完毕
       blogId: 1 // 当前博文的ID
-    }),
-    myPromies: () => {} // mutations 的异步操作
+    })
   },
   // get
   getters: {
     // 获取博文分组列表
     // 检查state里有没有，没有加载，有的话直接返回
-    getGroupList (state) {
+    getGroupList: (state) => {
       if (state.groupList.length === 0) {
         getObjectByStore('group').then((data) => {
-          data.forEach(element => {
-            state.groupList.push(element)
-          })
+          if (state.groupList.length === 0) {
+            data.forEach(element => {
+              state.groupList.push(element)
+            })
+          }
         })
       }
       return state.groupList
     },
 
-    // 获取当前页的博文列表
+    // 获取第一页的博文列表
     // 检查state里有没有，没有加载第一页，有的话直接返回
     getBlogList: (state) => {
       if (state.blogList.length === 0) {
@@ -75,7 +82,7 @@ export default createStore({
     },
 
     // 获取当前博文的讨论列表
-    getDicuessList: (state) => (blogId) => {
+    getDicuessList: (state, blogId) => {
       const promise = new Promise((resolve, reject) => {
         if (state.currentBlogId !== blogId) {
           findObjectByIndex('discuess', 'blogId', parseInt(blogId)).then((data) => {
@@ -94,7 +101,7 @@ export default createStore({
       return state.discuessList
     },
 
-    // 获取博文表单是否显示
+    // 获取博文表单的状态
     getBlogFormState (state) {
       return state.blogFormState
     },
@@ -115,24 +122,15 @@ export default createStore({
     setDiscuess (state, discuess) {
       state.discuessList.push(discuess)
     },
-    // 设置博文表单的开关
-    setBlogFormIsOpen (state, bool) {
-      state.blogFormState.isOpen = bool
+    // 关闭表单
+    setBlogFormIsOpen (state) {
+      state.blogFormState.isOpen = false
     },
     // 设置博文表单的编辑状态
     setBlogFormEditState (state, s) {
       state.blogFormState.blogId = s.blogId
       state.blogFormState.editState = s.editState
-      if (s.editState === 'update') {
-        // 加载对应的博文
-        getObject('blog', state.blogFormState.blogId).then((data) => {
-          state.blog.id = data.id
-          state.blog.title = data.title
-          state.blog.groupId = data.groupId
-          state.blog.introduction = data.introduction
-          state.blog.concent = data.concent
-        })
-      }
+      state.blogFormState.isOpen = s.isOpen
     },
     // 博文列表的分页
     pageBlogList (state, pageInfo) {
@@ -143,18 +141,9 @@ export default createStore({
           state.blogList.push(element)
         })
       })
-    },
-    // 测试
-    increment (state, value = 1) {
-      state.count += value
-      // 尝试一下 mutations 的异步操作
-      const pp = new Promise((resolve, reject) => {
-        resolve(state.count)
-      })
-      state.myPromies = pp
-      return pp
     }
   },
+
   // 可以异步
   actions: {
     // 添加一个博文
@@ -181,18 +170,28 @@ export default createStore({
       })
       return promise
     },
+    // 修改一个博文
+    updateBlog (state, blog) {
+      // 提交给vuex
+      this.commit('setBlog', blog)
+      const promise = new Promise((resolve, reject) => {
+        // 提交给后端
+        // 提交给前端存储
+        updateObject('blog', blog).then((id) => {
+          console.log(id)
+          resolve(id)
+        })
+      })
+      return promise
+    },
     // 获取当前博文内容
-    getCurrentBlog (state, s) {
-      state.blogFormState.blogId = s.blogId
-      state.blogFormState.editState = s.editState
+    getCurrentBlog (state) {
+      // state.blogFormState.blogId = s.blogId
+      // state.blogFormState.editState = s.editState
       const promise = new Promise((resolve, reject) => {
         // 加载对应的博文
-        getObject('blog', state.blogFormState.blogId).then((data) => {
-          state.blog.id = data.id
-          state.blog.title = data.title
-          state.blog.groupId = data.groupId
-          state.blog.introduction = data.introduction
-          state.blog.concent = data.concent
+        console.log('blogFormState -- ', this.state.blogFormState)
+        getObject('blog', this.state.blogFormState.blogId).then((data) => {
           resolve(data)
         })
       })
