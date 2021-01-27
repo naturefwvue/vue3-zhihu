@@ -42,10 +42,17 @@ const mapBlogAction = () => {
   const updateBlog = (blog) => store.dispatch('updateBlog', blog)
 
   /**
-    * 获取博文
+    * 获取当前博文，用于修改博文
   */
   const getBlog = () => {
     return store.dispatch('getCurrentBlog')
+  }
+
+  /**
+    * 异步获取博文内容，显示用。id：博文ID。返回 Promise
+  */
+  const getBlogInfo = (id) => {
+    return store.dispatch('getBlogInfo', id)
   }
 
   /**
@@ -102,6 +109,7 @@ const mapBlogAction = () => {
     addBlog, // 添加博文
     updateBlog, // 修改博文
     getBlog, // 获取博文内容
+    getBlogInfo, // 显示博文内容
     addDiscuess // 添加讨论
   }
 }

@@ -1,22 +1,22 @@
 <!--博文详细-->
-<template>呜呜{{blogId}}
+<template>
   <a-card style="margin: 22px;padding: 10px; ">
     {{blogInfo.title}} {{blogInfo.addTime}}<br>
     <p v-html="blogInfo.concent"></p>
     人气：{{blogInfo.viewCount}}- 点赞：{{blogInfo.agreeCount}} -
     <span @click="updateBlog(blogInfo.id)">修改</span><br>
   </a-card>
-  <discussList :blogId="blogId" :isReaload="isReaload"/>
-  <discussForm :blogId="blogId" @submitblog="submitblog"/>
+  <discussList :blogId="blogId"/>
+  <discussForm :blogId="blogId"/>
 </template>
 
 <script>
 // 显示博文内容
 // 博文点赞
-import { reactive, ref } from 'vue'
-import { myIndexedDB } from '../../store/indexedDB.js'
+import { ref } from 'vue'
 import discussList from './discuss-list.vue'
 import discussForm from './discuss-form.vue'
+import mapBlogAction from '../../store/myMap.js'
 
 export default {
   name: 'blog-info',
@@ -28,30 +28,18 @@ export default {
     blogId: Number
   },
   setup (props, ctx) {
-    const { getObject } = myIndexedDB() // 数据库
-    const blogInfo = reactive({}) // 数据
+    console.log('blog-info---setup')
+    const { getBlogInfo } = mapBlogAction()
+
+    const blogInfo = ref({}) // 数据
     const id = ref(props.blogId) // 博文ID
-    const isReaload = ref(false) // 是否重新加载讨论列表
-    console.log('blog-info-id', id.value)
     // 获取博文详细内容
-    getObject('blog', parseInt(id.value)).then((data) => {
-      console.log(data)
-      blogInfo.id = data.id
-      blogInfo.title = data.title
-      blogInfo.concent = data.concent
-      blogInfo.viewCount = data.viewCount
-      blogInfo.agreeCount = data.agreeCount
+    getBlogInfo(parseInt(id.value)).then((data) => {
+      blogInfo.value = data
     })
 
-    // 刷新讨论列表
-    const submitblog = (id) => {
-      isReaload.value = !isReaload.value
-    }
-
     return {
-      blogInfo,
-      isReaload,
-      submitblog
+      blogInfo
     }
   }
 

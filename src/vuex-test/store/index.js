@@ -16,13 +16,6 @@ export default createStore({
     groupList: reactive([]), // 博文分组列表
     blogList: reactive([]), // 当前分页的博文列表
     discuessList: reactive([]), // 当前博文的讨论列表
-    blog: reactive({
-      id: 1,
-      title: '',
-      groupId: null,
-      introduction: '',
-      concent: ''
-    }), // 当前博文内容
     blogConfig: reactive({
       query: {
         key: '', // 没有设置查询条件
@@ -68,21 +61,8 @@ export default createStore({
       return state.blogList
     },
 
-    // 获取当前博文内容
-    // 检查state里有没有，没有加载，有的话直接返回
-    getBlog: (state) => {
-      getObject('blog', state.blogFormState.blogId).then((data) => {
-        state.blog.id = data.id
-        state.blog.title = data.title
-        state.blog.groupId = data.groupId
-        state.blog.introduction = data.introduction
-        state.blog.concent = data.concent
-      })
-      return state.blog
-    },
-
     // 获取当前博文的讨论列表
-    getDicuessList: (state, blogId) => {
+    getDicuessList: (state) => (blogId) => {
       const promise = new Promise((resolve, reject) => {
         if (state.currentBlogId !== blogId) {
           findObjectByIndex('discuess', 'blogId', parseInt(blogId)).then((data) => {
@@ -104,11 +84,6 @@ export default createStore({
     // 获取博文表单的状态
     getBlogFormState (state) {
       return state.blogFormState
-    },
-
-    // 获取博文分组数量
-    getGroupCount (state) {
-      return state.group.length
     }
   },
 
@@ -134,6 +109,10 @@ export default createStore({
     },
     // 博文列表的分页
     pageBlogList (state, pageInfo) {
+      /* 判断分页方式
+      * 全blog 分页：查询、不查询
+      * 分组分页：查询、不查询
+      */
       const wz = (pageInfo.current - 1) * pageInfo.pageSize
       getObjectByStore('blog', pageInfo.pageSize, wz).then((data) => {
         state.blogList.length = 0
@@ -184,7 +163,7 @@ export default createStore({
       })
       return promise
     },
-    // 获取当前博文内容
+    // 获取当前博文内容，用于博文表单
     getCurrentBlog (state) {
       // state.blogFormState.blogId = s.blogId
       // state.blogFormState.editState = s.editState
@@ -192,6 +171,17 @@ export default createStore({
         // 加载对应的博文
         console.log('blogFormState -- ', this.state.blogFormState)
         getObject('blog', this.state.blogFormState.blogId).then((data) => {
+          resolve(data)
+        })
+      })
+      return promise
+    },
+    // 获取指定的博文内容，用于显示博文内容
+    getBlogInfo (state, blogId) {
+      const promise = new Promise((resolve, reject) => {
+        // 加载对应的博文
+        console.log('getBlogInfo -- ', blogId)
+        getObject('blog', blogId).then((data) => {
           resolve(data)
         })
       })

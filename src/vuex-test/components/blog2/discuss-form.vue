@@ -15,10 +15,10 @@
 
 <script>
 import { ref, reactive } from 'vue'
+import { message } from 'ant-design-vue'
 import mapBlogAction from '../../store/myMap.js'
 
-// 添加讨论
-
+// 添加讨论的表单
 const discussForm = reactive({
   blogId: 1,
   nick: 'jyk',
@@ -39,8 +39,11 @@ export default {
     discussForm.blogId = parseInt(blogId.value)
     // 添加新的讨论
     const submit = () => {
+      const key = 'discuess'
+      message.loading({ content: '提交讨论...', key })
       addDiscuess(discussForm).then((id) => {
         console.log(id)
+        message.success({ content: '提交成功！', key, duration: 2 })
       })
     }
 

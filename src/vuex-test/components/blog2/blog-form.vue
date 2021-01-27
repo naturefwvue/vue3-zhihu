@@ -51,6 +51,7 @@
 
 <script>
 import { ref, reactive, watch } from 'vue'
+import { message } from 'ant-design-vue'
 import mapBlogAction from '../../store/myMap.js'
 
 // 博文表单
@@ -79,11 +80,11 @@ export default {
       getBlog
     } = mapBlogAction()
 
-    // 表单的状态
-    const blogFormState = getBlogFormState()
-
     // 表单的标题
     const formTitle = ref('添加博文')
+
+    // 表单的状态
+    const blogFormState = getBlogFormState()
 
     // 获取分组列表，用于绑定表单
     const groupList = getGroupList()
@@ -116,24 +117,23 @@ export default {
       }
     })
 
-    // 提交状态
-    const confirmLoading = ref(false)
-
     // 获取博文信息，用于绑定表单
     // 添加、修改博文
     const handleOk = (e) => {
-      confirmLoading.value = true
+      const key = 'blogFrom'
       switch (blogFormState.editState) {
         case 'add': // 添加
+          message.loading({ content: '添加博文...', key })
           addBlog(blogForm).then((id) => {
             console.log(id)
-            confirmLoading.value = false
+            message.success({ content: '添加成功！', key, duration: 2 })
           })
           break
         case 'update': // 修改
+          message.loading({ content: '修改博文...', key })
           updateBlog(blogForm).then((id) => {
             console.log(id)
-            confirmLoading.value = false
+            message.success({ content: '修改成功！', key, duration: 2 })
           })
           break
       }
@@ -147,7 +147,6 @@ export default {
     return {
       formTitle, // 表单标题
       groupList, // 分组列表
-      confirmLoading,
       blogFormState,
       handleOk,
       handleCancel,
