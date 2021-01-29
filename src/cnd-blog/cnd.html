@@ -10,10 +10,14 @@
       <script src="js/vue.global.js"></script>
       <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
       <script src="https://unpkg.com/vue-router"></script>
+      <script src="https://unpkg.com/vue@next"></script>
+      <script src="https://unpkg.com/vue-router@next"></script>
+      <script src="https://unpkg.com/vuex@next"></script>
     -->
-    <script src="https://unpkg.com/vue@next"></script>
-    <script src="https://unpkg.com/vue-router@next"></script>
-    <script src="https://unpkg.com/vuex@next"></script>
+    
+    <script src="https://unpkg.com/vue@3.0.5/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue-router@4.0.3/dist/vue-router.global.js"></script>
+    <script src="https://unpkg.com/vuex@4.0.0-rc.2/dist/vuex.global.js"></script>
     <!-- element-plus 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-plus/lib/theme-chalk/index.css">
     <!-- element-plus 引入组件库 -->
@@ -21,7 +25,7 @@
     <!-- Ant Design Vue 引入样式 -->
     <link rel="stylesheet" href="js/antdv/antd.css">
     <!-- Ant Design Vue 引入组件库 -->
-    <script src="js/antdv/antd.js"></script>
+    <script src="js/antdv/antd.min.js"></script>
     <!-- Vant 引入样式文件 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@next/lib/index.css"/>
     <!-- Vant 引入组件库 -->
@@ -174,7 +178,7 @@
         const objTime = store.getters.getTime
         console.log('obj', obj)
         console.log('objTime', objTime)
-        
+
         return {  // 返回给模板，否则模板访问不到。
           value,
           click,
