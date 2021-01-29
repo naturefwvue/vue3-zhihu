@@ -128,7 +128,7 @@ export function myIndexedDB () {
   }
 
   /**
-  * 把vue的ref对象、reactive对象转换成原始对象
+  * 把vue的ref、reactive转换成原始对象
   */
   const _vueToObject = (vueObject) => {
     let _object = vueObject
@@ -361,7 +361,7 @@ export function myIndexedDB () {
   * count：获取数量，0表示获取全部\r
   * description：排序方式，prev倒序
   */
-  const getObjectByStore = (objectName, count, start, description) => {
+  const findObjectByStore = (objectName, count, start, description) => {
     const _start = start || 0
     const _count = count || 0
     const _end = _start + _count
@@ -418,51 +418,28 @@ export function myIndexedDB () {
   }
 
   /**
-  * 依据 索引 获取对象，只返回第一条
+  * 依据 索引+游标，获取对象，可以获取多条。
+  * objectName：表名。
+  * indexName：索引名称。
+  * id：索引值。
+  * page：{
+  *   start:开始,
+  *   count:数量,
+  *   description:IDBCursor.prev
+  * }
+  * where：(object) => {
+  *   reutrn true/false
+  * }
   */
-  const getObjectByIndex = (objectName, indexName, value) => {
-    const objectPromise = new Promise((resolve, reject) => {
-      const _getObjectByIndex = () => {
-        const tranRequest = db.transaction(objectName, 'readonly')
-        tranRequest
-          .objectStore(objectName)
-          .index(indexName)
-          .get(value).onsuccess = (event) => {
-            // tranRequest.commit()
-            resolve(event.target.result)
-          }
-
-        tranRequest.oncomplete = (event) => {
-          // note.innerHTML += '<li>Transaction completed.</li>';
-        }
-
-        tranRequest.onerror = function (event) {
-          reject(event)
-        }
-      }
-      // 判断数据库是否打开
-      if (typeof db === 'undefined') {
-        dbOpen().then(() => {
-          _getObjectByIndex()
-        })
-      } else {
-        _getObjectByIndex()
-      }
-    })
-    return objectPromise
-  }
-
-  /**
-  * 依据 索引 + 游标 获取对象，可以获取多条
-  */
-  const findObjectByIndex = (objectName, indexName, id, count, start, description) => {
-    const _start = start || 0
-    const _count = count || 0
+  const findObjectByIndex = (objectName, indexName, id, page = {}, where) => {
+    const _start = page.start || 0
+    const _count = page.count || 0
     const _end = _start + _count
-    const _description = description || IDBCursor.prev // 默认倒序
+    const _description = page.description || IDBCursor.prev // 默认倒序
 
     // 查询条件
     const keyRange = IDBKeyRange.only(id)
+    console.log('findObjectByIndex - keyRange', keyRange)
 
     const objectPromise = new Promise((resolve, reject) => {
       // 定义个函数，便于调用
@@ -476,12 +453,21 @@ export function myIndexedDB () {
           .openCursor(keyRange, _description)
 
         cursorRequest.onsuccess = (event) => {
+          console.log('findObjectByIndex - onsuccess - event', event)
           const cursor = event.target.result
           if (cursor) {
             if (_end === 0 || (cursorIndex >= _start && cursorIndex < _end)) {
-              dataList.push(cursor.value)
+              // 判断钩子函数
+              if (typeof where === 'function') {
+                if (where(cursor.value, cursorIndex)) {
+                  dataList.push(cursor.value)
+                  cursorIndex++
+                }
+              } else { // 没有设置查询条件
+                dataList.push(cursor.value)
+                cursorIndex++
+              }
             }
-            cursorIndex++
             cursor.continue()
           }
           // tranRequest.commit()
@@ -492,6 +478,7 @@ export function myIndexedDB () {
           resolve(dataList)
         }
         tranRequest.onerror = function (event) {
+          console.log('findObjectByIndex - onerror', event)
           reject(event)
         }
       }
@@ -509,7 +496,7 @@ export function myIndexedDB () {
   }
 
   /**
-  * 清空store里的所有对象
+  * 清空store里的所有对象。
   * storeName：对象仓库名；
   */
   const clearStore = (storeName) => {
@@ -542,7 +529,7 @@ export function myIndexedDB () {
   }
 
   /**
-  * 删除整个store
+  * 删除整个store。
   * storeName：对象仓库名；
   */
   const deleteStore = (storeName) => {
@@ -575,7 +562,7 @@ export function myIndexedDB () {
   }
 
   /**
-  * 删除数据库
+  * 删除数据库。
   * dbName：数据库名；
   */
   const deleteDB = (dbName) => {
@@ -590,17 +577,17 @@ export function myIndexedDB () {
   }
 
   return {
-    dbOpen, // 打开数据库的Promise
-    setup, // 设置默认对象
-    addObject, // 添加对象的Promise
-    updateObject, // 修改对象的Promise
-    deleteObject, // 删除对象的Promise
-    getObject, // 获取对象的Promise
-    getObjectByStore, // 获取表里的全部数据
-    getObjectByIndex, // 通过索引获取对象的Promise
-    clearStore, // 清空对象仓库里的所有对象的Promise
+    dbOpen, // 打开数据库
+    setup, // 初始化、升级数据库
+    addObject, // 添加对象
+    updateObject, // 修改对象
+    deleteObject, // 删除对象
+    getObject, // 依据ID获取对象，或者获取全部store
+    findObjectByStore, // store 查询和分页
+    findObjectByIndex, // index 查询和分页
+    clearStore, // 清空对象仓库里的所有对象
     deleteStore, // 删掉对象仓库
-    deleteDB, // 删除数据库
-    findObjectByIndex
+    // getObjectByIndex, // 通过index获取对象 不用了
+    deleteDB // 删除数据库
   }
 }

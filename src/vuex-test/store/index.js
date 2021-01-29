@@ -7,7 +7,7 @@ const {
   addObject,
   getObject,
   updateObject,
-  getObjectByStore,
+  findObjectByStore,
   findObjectByIndex
 } = myIndexedDB()
 
@@ -37,7 +37,7 @@ export default createStore({
     // 检查state里有没有，没有加载，有的话直接返回
     getGroupList: (state) => {
       if (state.groupList.length === 0) {
-        getObjectByStore('group').then((data) => {
+        findObjectByStore('group').then((data) => {
           if (state.groupList.length === 0) {
             data.forEach(element => {
               state.groupList.push(element)
@@ -52,7 +52,7 @@ export default createStore({
     // 检查state里有没有，没有加载第一页，有的话直接返回
     getBlogList: (state) => {
       if (state.blogList.length === 0) {
-        getObjectByStore('blog', state.blogConfig.pageSize, 0).then((data) => {
+        findObjectByStore('blog', state.blogConfig.pageSize, 0).then((data) => {
           data.forEach(element => {
             state.blogList.push(element)
           })
@@ -65,7 +65,16 @@ export default createStore({
     getDicuessList: (state) => (blogId) => {
       const promise = new Promise((resolve, reject) => {
         if (state.currentBlogId !== blogId) {
-          findObjectByIndex('discuess', 'blogId', parseInt(blogId)).then((data) => {
+          const page = {
+            start: 0,
+            count: 2,
+            description: IDBCursor.prev
+          }
+          const where = (object, index) => {
+            console.log(index + '判断条件：', object)
+            return true
+          }
+          findObjectByIndex('discuess', 'blogId', parseInt(blogId), page, where).then((data) => {
             state.discuessList.length = 0 // 清空之前的记录
             data.forEach(element => {
               state.discuessList.push(element)
@@ -114,7 +123,21 @@ export default createStore({
       * 分组分页：查询、不查询
       */
       const wz = (pageInfo.current - 1) * pageInfo.pageSize
-      getObjectByStore('blog', pageInfo.pageSize, wz).then((data) => {
+      findObjectByStore('blog', pageInfo.pageSize, wz).then((data) => {
+        state.blogList.length = 0
+        data.forEach(element => {
+          state.blogList.push(element)
+        })
+      })
+    },
+    // 博文列表的分页
+    pageBlogListByGroupId (state, pageInfo) {
+      /* 判断分页方式
+      * 全blog 分页：查询、不查询
+      * 分组分页：查询、不查询
+      */
+      const wz = (pageInfo.current - 1) * pageInfo.pageSize
+      findObjectByStore('blog', pageInfo.pageSize, wz).then((data) => {
         state.blogList.length = 0
         data.forEach(element => {
           state.blogList.push(element)

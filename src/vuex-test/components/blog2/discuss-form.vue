@@ -6,7 +6,7 @@
               v-model:value="discussForm.nick"
               placeholder="请输入昵称"></a-input><br>
       内容：<a-textarea
-              :autosize="{ minRows: 4, maxRows: 10}"
+              :autoSize="{ minRows: 4, maxRows: 10}"
               placeholder="请输入内容："
               v-model:value="discussForm.concent"/><br>
       <a-button type="primary" @click="submit">提交讨论</a-button>
