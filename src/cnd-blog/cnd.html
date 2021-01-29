@@ -22,10 +22,10 @@
     <link rel="stylesheet" href="https://unpkg.com/element-plus/lib/theme-chalk/index.css">
     <!-- element-plus 引入组件库 -->
     <script src="https://unpkg.com/element-plus/lib/index.full.js"></script>
-    <!-- Ant Design Vue 引入样式 -->
-    <link rel="stylesheet" href="js/antdv/antd.css">
-    <!-- Ant Design Vue 引入组件库 -->
-    <script src="js/antdv/antd.min.js"></script>
+    <!-- Ant Design Vue 引入样式 
+    <link rel="stylesheet" href="js/antdv/antd.css">-->
+    <!-- Ant Design Vue 引入组件库 
+    <script src="js/antdv/antd.min.js"></script>-->
     <!-- Vant 引入样式文件 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@next/lib/index.css"/>
     <!-- Vant 引入组件库 -->
@@ -40,8 +40,8 @@
       setup - count：{{count}}<br>
       setup - obj ：{{obj}}<br>
       setup - objTime ：{{objTime}}<br>
-      <a-button type="primary" @click="setCount">vuex的 计数</a-button><br>
-      <a-button type="primary" @click="setTime">vuex的 设置属性</a-button><br>
+      <el-button type="primary" @click="setCount">vuex的 计数</el-button><br>
+      <el-button type="primary" @click="setTime">vuex的 设置属性</el-button><br>
       <hr>
 
       数据绑定和UI库的演示<br>
@@ -50,8 +50,8 @@
       <input type="button" value="测试" @click="click"/><br>
       <!--element-plus 的 按钮-->
       <el-button @click="click">elemet的按钮</el-button><br>
-      <!--Ant Design Vue 的 按钮-->
-      <a-button type="primary" @click="click">antdv的按钮</a-button><br>
+      <!--Ant Design Vue 的 按钮
+      <a-button type="primary" @click="click">antdv的按钮</a-button><br>-->
       <!--Vant 的 按钮-->
       <van-button type="success" @click="click">vant的按钮</van-button><br>
       <hr>
@@ -194,7 +194,7 @@
     const vm = Vue.createApp(vue3Composition)
       .use(myVuex) // 挂载vuex
       .use(router) // 挂载路由
-      .use(antd) // 加载 Ant Design Vue
+      // .use(antd) // 加载 Ant Design Vue 加载的太慢，不要了
       .use(ElementPlus) // 加载ElementPlus
       .use(vant) // 加载vant
       .mount('#app') // 挂载Vue的app实例
